@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from .obvs import observation
+from .obsrv import observation
 from .basis import basis
 
 

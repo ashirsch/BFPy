@@ -29,7 +29,7 @@ class Observation(object):
             return 0
 
     def load(self, filepath=None):
-        # makes calls to obvs module, gets back numpy, and puts everything into place
+        # makes calls to obsrv module, gets back numpy, and puts everything into place
         pass
 
     def load_from_array(self, numpy_data, NA, wavelength_range):
