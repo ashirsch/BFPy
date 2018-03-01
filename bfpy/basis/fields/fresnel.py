@@ -1,5 +1,5 @@
 import numpy as np
-from numba import vectorize, guvectorize, jit
+from numba import vectorize, guvectorize, jit, njit, prange
 
 
 @vectorize("complex128(complex128,complex128)",
@@ -60,6 +60,19 @@ def total_interface_reflection_unrolled_jit_sig(r21, r10, uz, wavelength, l):
 # takes 1.21 seconds
 # LESSON: fastest approach appears to be guvectorize, but let numba do the vectorization (write with loops)
 
+
+
+# THE BIGGEST WINNER!!!!
+@njit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],float64[:],float64)",parallel=True)
+def total_interface_reflection_unrolled_jit_sig_p(r21, r10, uz, wavelength, l):
+    R = np.zeros((uz.shape[0],uz.shape[1],len(wavelength)), dtype=np.complex128)
+    for ux in prange(uz.shape[0]):
+        for uy in prange(uz.shape[1]):
+            for w in prange(len(wavelength)):
+                R[ux, uy, w] = (r21[ux,uy] + r10[ux,uy] * np.exp(2j * uz[ux,uy] * wavelength[w] * 2 * np.pi * l)) / \
+                             (1 + r21[ux,uy] * r10[ux,uy] * np.exp(2j * uz[ux,uy] * wavelength[w] * 2 * np.pi * l))
+    return R
+# FINAL TRUE WINNER at 0.50 seconds
 
 # NUMBA IS FASTER WHEN IT CAN VECTORIZE ALL AT ONCE - OVERHEAD OF MOVING AROUND BIG MATRICES IS VERY HIGH
 # The following code (broken up and wrapped to allow single calculation of phase term) is slower than

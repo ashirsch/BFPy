@@ -1,6 +1,7 @@
 import numpy as np
 from numba import vectorize
 import bfpy.basis.fields.fresnel as frs
+import bfpy.basis.fields.frs2 as frs2
 import time
 
 
@@ -43,18 +44,18 @@ def main():
     rs23 = frs.single_interface_reflect_s(uz3, uz2s)  # PAY ATTENTION TO ARGUMENT ORDER
     ts23 = frs.single_interface_transmit_s(uz2s, uz3)
 
-    t0 = time.time()
-    # Rs_1_phase_term = frs.phase_term(uz1, wavelength, 0.0, 2.0)
-    # tp = time.time()
     Rs = np.zeros((180, 180, 1024), dtype=np.complex128)
     Tsxy = np.zeros_like(Rs)
     Tsz = np.zeros_like(Rs)
+    t0 = time.time()
+    # Rs_1_phase_term = frs.phase_term(uz1, wavelength, 0.0, 2.0)
+    # tp = time.time()
     # frs.total_interface_reflect(rs21, rs10, Rs_1_phase_term, Rs)
-    frs.total_interface_reflection_unrolled(rs21, rs10, uz1, wavelength, 0.0, Rs)
-    # Rs = frs.total_interface_reflection_unrolled_jit_sig(rs21, rs10, uz1, wavelength, 0.0)
-
-    frs.total_interface_transmission_xy_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsxy)
-    frs.total_interface_transmission_z_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsz)
+    # frs.total_interface_reflection_unrolled(rs21, rs10, uz1, wavelength, 0.0, Rs)
+    Rs = frs.total_interface_reflection_unrolled_jit_sig_p(rs21, rs10, uz1, wavelength, 0.0)
+    # frs2.total_interface_reflection_one_mom(rs21, rs10, uz1, wavelength, 0.0, Rs)
+    # frs.total_interface_transmission_xy_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsxy)
+    # frs.total_interface_transmission_z_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsz)
     tr = time.time()
 
     # print("Phase time: {0}".format(tp-t0))

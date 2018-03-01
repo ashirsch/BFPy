@@ -7,7 +7,7 @@ if __name__ == "__main__":
     t0 = time.time()
     # ========= TEST CODE HERE =========
     Rs, Tsxy, Tsz = fields.main()
-    print(Rs[0,0,0])
+    print(Rs[50,60,900])
     print(Tsxy[0,0,0])
     print(Tsz[0,0,0])
     # ==================================
