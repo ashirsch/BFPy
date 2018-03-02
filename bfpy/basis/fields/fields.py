@@ -1,7 +1,6 @@
 import numpy as np
 from numba import vectorize
 import bfpy.basis.fields.fresnel as frs
-import bfpy.basis.fields.frs2 as frs2
 import time
 
 
@@ -39,26 +38,26 @@ def main():
     uz2p = oop_wave_number_birefringent(ux, uy, n2, n2e)
     uz3 = oop_wave_number(ux, uy, n3)
 
-    rs10 = frs.single_interface_reflect_s(uz0, uz1)
-    rs21 = frs.single_interface_reflect_s(uz1, uz2s)
-    rs23 = frs.single_interface_reflect_s(uz3, uz2s)  # PAY ATTENTION TO ARGUMENT ORDER
-    ts23 = frs.single_interface_transmit_s(uz2s, uz3)
+    rs10 = frs.single_interface_reflection_s(uz0, uz1)
+    rs21 = frs.single_interface_reflection_s(uz1, uz2s)
+    rs23 = frs.single_interface_reflection_s(uz3, uz2s) # PAY ATTENTION TO ARGUMENT ORDER
+    ts23 = frs.single_interface_transmission_s(uz2s, uz3)
 
-    Rs = np.zeros((180, 180, 1024), dtype=np.complex128)
-    Tsxy = np.zeros_like(Rs)
-    Tsz = np.zeros_like(Rs)
+    rp10 = frs.single_interface_reflection_p(uz0, uz1, n0, n1)
+    rp21 = frs.single_interface_reflection_p(uz1, uz2p, n1, n2)
+    rp23 = frs.single_interface_reflection_p(uz3, uz2p, n3, n2) # PAY ATTENTION TO ARGUMENT ORDER
+    tp23 = frs.single_interface_transmission_p(uz2p, uz3, n2, n3)
+
     t0 = time.time()
-    # Rs_1_phase_term = frs.phase_term(uz1, wavelength, 0.0, 2.0)
-    # tp = time.time()
-    # frs.total_interface_reflect(rs21, rs10, Rs_1_phase_term, Rs)
-    # frs.total_interface_reflection_unrolled(rs21, rs10, uz1, wavelength, 0.0, Rs)
-    Rs = frs.total_interface_reflection_unrolled_jit_sig_p(rs21, rs10, uz1, wavelength, 0.0)
-    # frs2.total_interface_reflection_one_mom(rs21, rs10, uz1, wavelength, 0.0, Rs)
-    # frs.total_interface_transmission_xy_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsxy)
-    # frs.total_interface_transmission_z_unrolled(ts23,rs23,uz2s,wavelength,d,s,Rs,Tsz)
+    Rs = frs.total_interface_reflection(rs21, rs10, uz1, wavelength, 0.0)
+    Tsxy = frs.total_interface_transmission_xy(ts23, rs23, uz2s, wavelength, d, s, Rs)
+    Tsz = frs.total_interface_transmission_z(ts23, rs23, uz2s, wavelength, d, s, Rs)
     tr = time.time()
 
-    # print("Phase time: {0}".format(tp-t0))
-    print("TIR time: {0}".format(tr-t0))
+    Rp = frs.total_interface_reflection(rp21, rp10, uz1, wavelength, 0.0)
+    Tpxy = frs.total_interface_transmission_xy(tp23, rp23, uz2p, wavelength, d, s, Rp)
+    Tpz = frs.total_interface_transmission_z(tp23, rp23, uz2p, wavelength, d, s, Rp)
 
-    return Rs, Tsxy, Tsz
+    print("Rs+Tsxy+Tsz time: {0}".format(tr-t0))
+
+    return Rp, Tpxy, Tpz
