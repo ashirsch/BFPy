@@ -1,5 +1,6 @@
 import numpy as np
 from .fields import fields
+from .builders import EDIsoBuilder
 
 class BasisFactory:
 
@@ -10,20 +11,6 @@ class BasisFactory:
         else:
             print("Bad builder type: " + parameters.basis_type)
             pass
-
-
-class EDIsoBuilder:
-    """
-    :type basis_parameters: BasisParameters
-    """
-
-    def __init__(self, basis_parameters):
-        self.basis_parameters = basis_parameters
-        self.field_set = fields.Field(basis_parameters)
-
-    def build(self):
-        self.field_set.calculate_fields(["ED"])
-        pass
 
 
 class BasisParameters:
@@ -49,7 +36,9 @@ class BasisParameters:
                  ux_range, uy_range,
                  ux_count, uy_count,
                  d, s, l,
-                 wavelength):
+                 wavelength,
+                 wavelength_count,
+                 pol_angle):
         self.basis_type = basis_type
         self.n0         = n0
         self.n1         = n1
@@ -64,3 +53,5 @@ class BasisParameters:
         self.s          = s
         self.l          = l
         self.wavelength = wavelength
+        self.wavelength_count = wavelength_count
+        self.pol_angle = pol_angle

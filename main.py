@@ -1,7 +1,7 @@
 import time
 import numba
 import numpy as np
-from bfpy.basis.fields import fields
+from bfpy.basis import basis
 from bfpy.basis.basis_factory import BasisParameters
 
 if __name__ == "__main__":
@@ -11,12 +11,14 @@ if __name__ == "__main__":
                          (-1.3,1.3), (-1.3,1.3),
                          180, 180,
                          10.0, 10.0, 0.0,
-                         np.linspace(554.7395, 684.6601, 1024, dtype=np.float64))
+                         np.linspace(554.7395, 684.6601, 1024, dtype=np.float64),
+                         1024,
+                         0)
 
     t0 = time.time()
     # ========= TEST CODE HERE =========
-    field = fields.Field(basis_parameters=bp)
-    field.calculate_fields(["ED", "MD"])
+    basis = basis.Basis()
+    basis.build(basis_parameters=bp)
     # ==================================
     t1 = time.time()
-    print("Done with elapsed time: {0} sec".format(t1-t0))
+    print("Done with elapsed time: {0:.3f} sec".format(t1-t0))
