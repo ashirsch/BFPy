@@ -16,4 +16,4 @@ class Basis(object):
 
         self.built = True
         print(basis_parameters.basis_type + " basis successfully built.")
-        print("Ellapsed build time: {0:.3f}".format(t1-t0))
+        print("Elapsed build time: {0:.3f}".format(t1-t0))

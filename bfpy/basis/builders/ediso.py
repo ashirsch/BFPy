@@ -28,10 +28,12 @@ class EDIsoBuilder:
             # load into sparse matrix with spatial offset
         ed_isometric = self.sparse_column_major_offset(ed_isometric)
         md_isometric = self.sparse_column_major_offset(md_isometric)
-            # trim basis based on lambda range TODO: work on lambda padding logic and x-y flipping
         # concatenate ED and MD sparse matrices
+        basis = hstack([ed_isometric, md_isometric])
+        # trim basis based on lambda range TODO: work on x-y flipping
+        basis = self.basis_trim(basis)
         # return the single sparse matrix
-        return hstack([ed_isometric, md_isometric])
+        return basis
 
 
     def sparse_column_major_offset(self, matrix):
@@ -43,6 +45,19 @@ class EDIsoBuilder:
         cols = sparse_cols(self.__bp.ux_count, self.__bp.uy_count, self.__bp.wavelength_count)
         # load into sparse matrix
         return csc_matrix((flat_matrix, (rows, cols)))
+
+    def basis_trim(self, matrix):
+        begin_ind = int(self.__bp.uy_count * np.floor(self.__bp.ux_count/2))
+        if self.__bp.pad_w:
+            begin_ind += int(self.__bp.uy_count * np.floor((self.__bp.ux_count - 1)/2))
+
+        final_pix_row_ind = matrix.shape[0] - 1
+        end_ind = int(final_pix_row_ind - self.__bp.uy_count * np.floor((self.__bp.ux_count - 1)/2))
+        if self.__bp.pad_w:
+            end_ind -= int(self.__bp.uy_count * np.floor(self.__bp.ux_count/2))
+
+        return matrix[begin_ind:(end_ind+1), :]
+
 
 
 def sparse_rows(ux_count, uy_count, wavelength_count):
