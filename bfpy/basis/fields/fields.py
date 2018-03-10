@@ -1,5 +1,5 @@
 import numpy as np
-from numba import vectorize
+from numba import vectorize, jit, prange
 import bfpy.basis.fields.fresnel as frs
 import bfpy.basis.fields.dipole as dip
 
@@ -48,11 +48,11 @@ class Field(object):
             self.xpol.ED = Field.PolFieldSet.PolDipoleField("ED")
 
             self.ypol.ED.x = dip._ypol_edx(self.u.x, self.u.y, self.u.z2s, self.u.z3,
-                                       Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
+                                           Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
             self.ypol.ED.y = dip._ypol_edy(self.u.x, self.u.y, self.u.z2s, self.u.z3,
-                                       Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
+                                           Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
             self.ypol.ED.z = dip._ypol_edz(self.u.x, self.u.y, self.u.z2s, self.u.z3,
-                                       Tpz, self.__bp.n2o, self.__bp.n3)
+                                           Tpz, self.__bp.n2o, self.__bp.n3)
 
             # TODO: for closed slit case, will need special treatment for xpol; for now permutation will suffice
             self.xpol.ED.x = np.transpose(self.ypol.ED.x, (1, 0 ,2))
@@ -76,6 +76,8 @@ class Field(object):
             self.xpol.MD.z = -np.transpose(self.ypol.MD.z, (1, 0, 2))
             print("generated MD fields")
         # TODO: EQ expansion
+        # apply angular limit mask
+        self._apply_mask()
 
 
     def _calculate_wavenumbers(self):
@@ -113,6 +115,16 @@ class Field(object):
         Tpz  = frs.total_interface_transmission_z(tp23, rp23, self.u.z2p,
                                                   self.__bp.wavelength, self.__bp.d, self.__bp.s, Rp)
         return Tsxy, Tsz, Tpxy, Tpz
+
+    def _apply_mask(self):
+        # find indices in each 2D matrix that is beyond the angular limit
+        mask_r, mask_c = np.where(np.sqrt(self.u.x**2 + self.u.y**2) > (self.__bp.uy_range[1] * 1.001))
+        for active_field in [self.xpol, self.ypol]:
+            for active_dipole in [active_field.ED, active_field.MD, active_field.EQ]:
+                if active_dipole is not None:
+                    active_dipole.x[mask_r, mask_c, :] = 0
+                    active_dipole.y[mask_r, mask_c, :] = 0
+                    active_dipole.z[mask_r, mask_c, :] = 0
 
 
 @vectorize("complex128(complex128,complex128,float64)",
