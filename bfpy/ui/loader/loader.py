@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import sys
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -15,30 +16,35 @@ class Ui_MainWindow(object):
         MainWindow.setAutoFillBackground(False)
         self.centralWidget = QtWidgets.QWidget(MainWindow)
         self.centralWidget.setStyleSheet("background-color: rgb(63, 63, 63);\n"
-"border-color: rgb(217, 217, 217);")
+                                         "border-color: rgb(217, 217, 217);")
         self.centralWidget.setObjectName("centralWidget")
+
         self.CanvasPlaceholder = QtWidgets.QWidget(self.centralWidget)
         self.CanvasPlaceholder.setGeometry(QtCore.QRect(10, 30, 301, 301))
         self.CanvasPlaceholder.setStyleSheet("border-color: rgb(190, 190, 190);\n"
-"background-color: rgb(99, 99, 99);")
+                                             "background-color: rgb(99, 99, 99);")
         self.CanvasPlaceholder.setObjectName("CanvasPlaceholder")
+
         self.chooseButton = QtWidgets.QPushButton(self.centralWidget)
         self.chooseButton.setGeometry(QtCore.QRect(340, 30, 91, 22))
         self.chooseButton.setStyleSheet("background-color: rgb(202, 202, 202);")
         self.chooseButton.setObjectName("chooseButton")
+
         self.activeFile = QtWidgets.QLabel(self.centralWidget)
         self.activeFile.setGeometry(QtCore.QRect(20, 10, 411, 16))
         self.activeFile.setStyleSheet("color: rgb(217, 217, 217);")
         self.activeFile.setObjectName("activeFile")
+
         self.roiFrame = QtWidgets.QFrame(self.centralWidget)
         self.roiFrame.setGeometry(QtCore.QRect(320, 60, 131, 141))
         self.roiFrame.setStyleSheet("background-color: rgb(99, 99, 99);\n"
-"border-color: rgb(217, 217, 217);")
+                                    "border-color: rgb(217, 217, 217);")
         self.roiFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.roiFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.roiFrame.setLineWidth(1)
         self.roiFrame.setMidLineWidth(1)
         self.roiFrame.setObjectName("roiFrame")
+
         self.spinBox = QtWidgets.QSpinBox(self.roiFrame)
         self.spinBox.setGeometry(QtCore.QRect(60, 10, 61, 22))
         self.spinBox.setStyleSheet("background-color: rgb(224, 224, 224);")
@@ -97,8 +103,8 @@ class Ui_MainWindow(object):
         font.setWeight(9)
         self.loadButton.setFont(font)
         self.loadButton.setStyleSheet("background-color: rgb(247, 186, 0);\n"
-"color: rgb(63, 63, 63);\n"
-"font: 75 8pt \"MS Shell Dlg 2\";")
+                                      "color: rgb(63, 63, 63);\n"
+                                      "font: 75 8pt \"MS Shell Dlg 2\";")
         self.loadButton.setObjectName("loadButton")
         MainWindow.setCentralWidget(self.centralWidget)
         self.menuBar = QtWidgets.QMenuBar(MainWindow)
@@ -125,3 +131,12 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Pol. Type"))
         self.loadButton.setText(_translate("MainWindow", "Load Data"))
 
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    app.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    mainwindow = QtWidgets.QMainWindow()
+    main = Ui_MainWindow()
+    main.setupUi(mainwindow)
+    mainwindow.show()
+
+    sys.exit(app.exec_())

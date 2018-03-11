@@ -31,7 +31,8 @@ class EDIsoBuilder:
         # concatenate ED and MD sparse matrices
         basis = hstack([ed_isometric, md_isometric])
         # trim basis based on lambda range TODO: work on x-y flipping
-        basis = self.basis_trim(basis)
+        if self.__bp.trim_w:
+            basis = self.basis_trim(basis)
         # return the single sparse matrix
         return basis
 
