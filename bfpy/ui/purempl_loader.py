@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Button, RectangleSelector
+from matplotlib.widgets import Button, RectangleSelector, TextBox, CheckButtons, SpanSelector
 from PyQt5.QtWidgets import QFileDialog
 import spe_loader
 
@@ -9,56 +9,59 @@ class LoaderUI(object):
 
     def __init__(self):
         self.full_sensor_data = None
+        self.selected_data = None
+        self.spe_file = None
+        self.selector = None
 
-        freqs = np.arange(2, 20, 3)
-
-        fig, self.main_ax = plt.subplots()
-        plt.subplots_adjust(bottom=0.2)
-        # t = np.arange(0.0, 1.0, 0.001)
-        # s = np.sin(2 * np.pi * freqs[0] * t)
-        # l, = plt.plot(t, s, lw=2)
+        fig, (self.full_sensor_ax, self.selected_ax) = plt.subplots(1, 2)
+        plt.subplots_adjust(bottom=0.4)
 
         # Make open, load, draw buttons
-        axopen = plt.axes([0.05, 0.05, 0.1, 0.075])
-        axload = plt.axes([0.81, 0.05, 0.1, 0.075])
-        axdraw = plt.axes([.5, .05, .1, .075])
-        bload = Button(axload, 'Load')
+        axopen = plt.axes([0.05, 0.05, 0.2, 0.07])
+        axload = plt.axes([0.75, 0.05, 0.2, 0.07])
+        axfull_lambda = plt.axes([0.40, 0.05, 0.2, 0.07])
+        bload = Button(axload, 'Load Selected')
         bload.on_clicked(self._load_callback)
-        bopen = Button(axopen, 'Open')
+        bopen = Button(axopen, 'Open File')
         bopen.on_clicked(self._open_callback)
-        bdraw = Button(axdraw, 'Full Lambda')
-        bdraw.on_clicked(self._draw_callback)
+
+        self.chk_full_lambda = CheckButtons(axfull_lambda, ['Full Lambda'], [True])
+        self.chk_full_lambda.on_clicked(self._full_lambda_callback)
+
+        axpol_angle = plt.axes([0.2, 0.17, 0.05, 0.07])
+        txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0')
 
         print("\n      click  -->  release")
 
-        self.RS = RectangleSelector(self.main_ax, self._line_select_callback,
-                                                drawtype='box', useblit=False,
-                                                button=[1, 3],  # don't use middle button
-                                                minspanx=1, minspany=0.1,
-                                                spancoords='data',
-                                                interactive=True)
+        self._full_lambda_callback(None)
         plt.connect('key_press_event', self._toggle_selector)
         plt.show()
 
-    def _line_select_callback(self, eclick, erelease):
-        'eclick and erelease are the press and release events'
+    def _rect_select_callback(self, eclick, erelease):
         x1, y1 = eclick.xdata, eclick.ydata
         x2, y2 = erelease.xdata, erelease.ydata
         print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, y1, x2, y2))
-        print(" The button you used were: %s %s" % (eclick.button, erelease.button))
+
+    def _span_select_callback(self, ymin, ymax):
+        print("(%3.2f) --> (%3.2f)" % (ymin, ymax))
+        ymin = int(np.floor(ymin))
+        ymax = int(np.floor(ymax))
+        self.selected_data = self.full_sensor_data[ymin:ymax+1,:]
+        self._image_selected_data()
 
 
     def _toggle_selector(self, event):
         print(' Key pressed.')
-        if event.key in ['Q', 'q'] and self.RS.active:
+        if event.key in ['Q', 'q'] and self.selector.active:
             print(' RectangleSelector deactivated.')
-            self.RS.set_active(False)
-        if event.key in ['A', 'a'] and not self.RS.active:
+            self.selector.set_active(False)
+        if event.key in ['A', 'a'] and not self.selector.active:
             print(' RectangleSelector activated.')
-            self.RS.set_active(True)
+            self.selector.set_active(True)
 
     def _load_callback(self, event):
         print('Load clicked')
+        # TODO: make calls to obsrv module to properly load data and wavelength information
 
 
     def _open_callback(self, event):
@@ -68,26 +71,38 @@ class LoaderUI(object):
         # file_dialog.setFilter("SPE files (*.spe)")
         if file_dialog.exec_():
             filenames = file_dialog.selectedFiles()
-            spe_data = spe_loader.load_from_files(filenames)
-            self.full_sensor_data = spe_data.data[0][0]
-            self._image_spe_data()
+            self.spe_file = spe_loader.load_from_files(filenames)
+            self.full_sensor_data = self.spe_file.data[0][0]
+            self._image_full_sensor_data()
         else:
             return
         print('Open clicked')
 
-    def _draw_callback(self, event):
-        self.RS.to_draw.set_visible(True)
-        self.RS.extents = (0, 1024, self.RS.extents[2], self.RS.extents[3])
+    def _full_lambda_callback(self, event):
+        if self.selector is not None:
+            self.selector.set_visible(False)
+        chk_status = self.chk_full_lambda.get_status()
+        if chk_status[0]:
+            self.selector = SpanSelector(self.full_sensor_ax, self._span_select_callback, direction='vertical',
+                                         minspan=5, useblit=False, span_stays=False,
+                                         rectprops=dict(facecolor='red', alpha=0.2))
+        else:
+            self.selector = RectangleSelector(self.full_sensor_ax, self._rect_select_callback,
+                                              drawtype='box', useblit=False,
+                                              button=[1, 3],  # don't use middle button
+                                              minspanx=1, minspany=0.1,
+                                              spancoords='data',
+                                              interactive=True)
 
-    def _image_spe_data(self):
-        self.main_ax.clear()
-        self.RS = RectangleSelector(self.main_ax, self._line_select_callback,
-                                    drawtype='box', useblit=False,
-                                    button=[1, 3],  # don't use middle button
-                                    minspanx=1, minspany=0.1,
-                                    spancoords='data',
-                                    interactive=True)
-        self.main_ax.imshow(self.full_sensor_data)
+
+    def _image_full_sensor_data(self):
+        self.full_sensor_ax.clear()
+        self._full_lambda_callback(None)
+        self.full_sensor_ax.imshow(self.full_sensor_data)
+
+    def _image_selected_data(self):
+        self.selected_ax.clear()
+        self.selected_ax.imshow(self.selected_data)
 
 
 if __name__ == "__main__":
