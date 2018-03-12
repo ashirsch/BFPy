@@ -60,7 +60,6 @@ class EDIsoBuilder:
         return matrix[begin_ind:(end_ind+1), :]
 
 
-
 def sparse_rows(ux_count, uy_count, wavelength_count):
     single_wavelength_rows = np.arange(0, ux_count*uy_count)
     offset = np.arange(0,uy_count*wavelength_count,uy_count)

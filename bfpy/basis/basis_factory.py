@@ -62,6 +62,8 @@ class BasisParameters:
         self.pol_angle = pol_angle
         self.pad_w = pad_w
         self.trim_w = trim_w
+        self.orig_wavelength = wavelength
+        self.orig_wavelength_count = wavelength_count
 
         if self.pad_w:
             self._pad_wavelength()

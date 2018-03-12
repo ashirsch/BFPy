@@ -9,7 +9,7 @@ class BFPSession(object):
         if pol_children is None:
             pol_children = []
         self.__pol_children = pol_children  # PolDataSet
-        self.model = None                   # mosek.Model() or subclass of such
+        self.model = None                   # cvxpy Model or subclass of such
         self.basis_parameters = None        # BasisParameters class or subclass of such
         self.vis = None                     # PlotSet
 
