@@ -1,5 +1,6 @@
 name: BFPy
 channels:
+  - omnia
   - defaults
 dependencies:
   - ca-certificates=2017.08.26=h94faf87_0
@@ -19,8 +20,8 @@ dependencies:
   - llvmlite=0.21.0=py36he0b0552_0
   - matplotlib=2.1.2=py36h016c42a_0
   - mkl=2018.0.1=h2108138_4
-  - numba=0.36.2=np114py36h12cb543_0
-  - numpy=1.14.0=py36h4a99626_1
+  - numba=0.36.2=np112py36h291982f_0
+  - numpy=1.12.1=py36hf30b8aa_1
   - openssl=1.0.2n=h74b6da3_0
   - parso=0.1.1=py36hae3edee_0
   - pickleshare=0.7.4=py36h9de030f_0
@@ -33,6 +34,7 @@ dependencies:
   - python-dateutil=2.6.1=py36h509ddcb_1
   - pytz=2017.3=py36h1d3fa6b_0
   - qt=5.6.2=vc14h6f8c307_12
+  - scipy=1.0.0=py36h1260518_0
   - setuptools=38.4.0=py36_0
   - simplegeneric=0.8.1=py36_2
   - sip=4.18.1=py36h9c25514_2
@@ -46,8 +48,19 @@ dependencies:
   - wheel=0.30.0=py36h6c3ec14_1
   - wincertstore=0.2=py36h7fe50ca_0
   - zlib=1.2.11=h8395fce_2
+  - scs=1.2.6=np112py36_1
   - pip:
+    - cvxcanon==0.1.1
+    - cvxpy==0.4.11
+    - dill==0.2.7.1
+    - ecos==2.0.5
+    - fastcache==1.0.2
+    - mosek==8.1.31
+    - multiprocess==0.70.5
+    - pyqt5==5.10
+    - pyreadline==2.1
     - spe2py==1.1
+    - toolz==0.9.0
     - untangle==1.1.1
 prefix: C:\Users\Alex\Anaconda3\envs\BFPy
 
