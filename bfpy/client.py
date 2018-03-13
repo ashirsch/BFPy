@@ -1,23 +1,40 @@
 #!/usr/bin/env python
-from .obsrv import observation
-from .basis import basis
+import sys
+
+from bfpy.obsrv import observation
+from bfpy.basis import basis
 
 
 class BFPSession(object):
 
-    def __init__(self, pol_children=None):
+    def __init__(self, verbose=True, pol_children=None):
         if pol_children is None:
             pol_children = []
         self.__pol_children = pol_children  # PolDataSet
         self.model = None                   # cvxpy Model or subclass of such
         self.basis_parameters = None        # BasisParameters class or subclass of such
         self.vis = None                     # PlotSet
+        self.verbose = verbose
 
     def is_empty(self):
-        pass
+        return not self.__pol_children
 
     def reset(self):
-        pass
+        yes = ['y', 'yes']
+        no = ['n', 'no', '']
+        sys.stdout.write('WARNING: This action will clear all loaded data, calculated bases, and models.\n'
+                   '    Would you still like to proceed? [y/N] ')
+        choice = input().lower()
+        if choice in yes:
+            self.__pol_children.clear()
+            self.model = None
+            self.basis_parameters = None
+            self.vis = None
+        elif choice in no:
+            return
+        else:
+            print('Invalid answer. Exiting without resetting...')
+            return
 
     def is_defined(self):
         pass
@@ -26,8 +43,32 @@ class BFPSession(object):
         return len(self.__pol_children)
 
     def load(self, pol_angle):
+        # check if polarization has already been loaded into session
+        if not self.is_empty():
+            for child in self.__pol_children:
+                if pol_angle == child.pol_angle:
+                    yes = ['y', 'yes']
+                    no = ['n', 'no', '']
+                    sys.stdout.write('WARNING: An Observation with polarization angle {0} is already defined.\n'
+                                     '    Would you like to overwrite this observation? [y/N] '.format(pol_angle))
+                    choice = input().lower()
+                    if choice in yes:
+                        self.__pol_children.remove(child)
+                        continue
+                    elif choice in no:
+                        return
+                    else:
+                        print('Invalid answer. Exiting without overwriting...')
+                        return
+        # create new polarized data set
+        active_data_set = PolDataSet(pol_angle)
         # launches interactive loading
-        pass
+        success = active_data_set.observation._load()
+        if success:
+            print('Successfully loaded {0} deg. data.'.format(pol_angle))
+            self.__pol_children.append(active_data_set)
+        else:
+            print('Unable to load observation.')
 
     def load_from_file(self, pol_angle, filename):
         # make and append PolDataSet and load

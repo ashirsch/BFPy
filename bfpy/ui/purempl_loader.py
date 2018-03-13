@@ -17,6 +17,7 @@ class LoaderUI(object):
 
         fig, (self.full_sensor_ax, self.selected_ax) = plt.subplots(1, 2)
         plt.subplots_adjust(bottom=0.4)
+        fig.canvas.set_window_title('Load {0} Deg. Polarized Data'.format(self.__pol_angle))
 
         # Make open, load, draw buttons
         axopen = plt.axes([0.05, 0.05, 0.2, 0.07])
@@ -48,7 +49,7 @@ class LoaderUI(object):
         self._full_lambda_callback(None)
         plt.connect('key_press_event', self._toggle_selector)
 
-        plt.show()
+        plt.show(block=True)
 
     def _rect_select_callback(self, eclick, erelease):
         x1, y1 = eclick.xdata, eclick.ydata
