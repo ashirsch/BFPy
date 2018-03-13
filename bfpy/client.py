@@ -25,15 +25,15 @@ class BFPSession(object):
     def n_polarizations(self):
         return len(self.__pol_children)
 
-    def load_interactive(self):
+    def load(self, pol_angle):
         # launches interactive loading
         pass
 
-    def load_from_file(self, pol_type, filename):
+    def load_from_file(self, pol_angle, filename):
         # make and append PolDataSet and load
         pass
 
-    def load_from_array(self, pol_type, numpy_data):
+    def load_from_array(self, pol_angle, numpy_data):
         # make and append PolDataSet and load
         pass
 
@@ -54,7 +54,7 @@ class BFPSession(object):
 
 class PolDataSet(object):
 
-    def __init__(self, pol=None):
-        self.observation = observation.Observation()
+    def __init__(self, pol_angle=None):
+        self.observation = observation.Observation(pol_angle)
         self.basis = basis.Basis()
-        self.pol_type = pol
+        self.pol_angle = pol_angle

@@ -1,11 +1,14 @@
+from bfpy.ui import LoaderUI
+
 # noinspection PyPep8Naming
 class Observation(object):
 
-    def __init__(self):
-        self.filepath = ""
+    def __init__(self, pol_angle):
+        self.filepath = None
         self.data = None
-        self.wavelength_range = (0, 0)
-        self.NA = 0  # do we need this?
+        self.wavelength = None
+        self.__pol_angle = pol_angle
+        # self.NA = 0  # do we need this?
 
     @property
     def n_frames(self):
@@ -28,22 +31,26 @@ class Observation(object):
         else:
             return 0
 
-    def load(self, filepath=None):
-        # makes calls to obsrv module, gets back numpy, and puts everything into place
-        pass
+    # TODO: Allow for loading of multiple frames (and sum and average options)
+    def _load(self):
+        loader = LoaderUI()
+        if loader.success:
+            self._load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.spe_file.filepath)
+            return True
+        else:
+            return False
 
-    def load_from_array(self, numpy_data, NA, wavelength_range):
+    def _load_from_array(self, numpy_data, wavelength, filepath=None):
         # analyzes numpy_data and puts into proper place
-        pass
+        self.data = numpy_data
+        self.wavelength = wavelength
+        if filepath is not None:
+            self.filepath = filepath
 
-    def set_wavelength_range(self, wavelength_range):
-        if (wavelength_range[0] > 0) and (wavelength_range[1] > 0):
-            self.wavelength_range = wavelength_range
-        else:
-            raise ValueError("Invalid wavelength range: {0}".format(wavelength_range))
-
-    def set_NA(self, NA):
-        if NA > 0:
-            self.NA = NA
-        else:
-            raise ValueError("Invalid NA: {0}".format(NA))
+if __name__ == "__main__":
+    obs = Observation(0)
+    success = obs._load()
+    if success:
+        print(obs.filepath)
+    else:
+        print("load failed")

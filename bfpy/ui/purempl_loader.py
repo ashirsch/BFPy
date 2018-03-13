@@ -7,11 +7,13 @@ import spe_loader
 
 class LoaderUI(object):
 
-    def __init__(self):
+    def __init__(self, pol_angle=None):
         self.full_sensor_data = None
         self.selected_data = None
         self.spe_file = None
         self.selector = None
+        self.__pol_angle = pol_angle
+        self.success = False
 
         fig, (self.full_sensor_ax, self.selected_ax) = plt.subplots(1, 2)
         plt.subplots_adjust(bottom=0.4)
@@ -45,6 +47,7 @@ class LoaderUI(object):
 
         self._full_lambda_callback(None)
         plt.connect('key_press_event', self._toggle_selector)
+
         plt.show()
 
     def _rect_select_callback(self, eclick, erelease):
@@ -61,7 +64,6 @@ class LoaderUI(object):
         self.ypix_max.set_val(str(ymax))
         self._image_selected_data(ymin, ymax)
 
-
     def _toggle_selector(self, event):
         print(' Key pressed.')
         if event.key in ['Q', 'q'] and self.selector.active:
@@ -73,8 +75,11 @@ class LoaderUI(object):
 
     def _load_callback(self, event):
         print('Load clicked')
-        # TODO: make calls to obsrv module to properly load data and wavelength information
-
+        if self.spe_file is not None and self.selected_data is not None:
+            self.success = True
+            plt.close()
+        else:
+            print('Invalid loader state: must have loaded file and selected data')
 
     def _open_callback(self, event):
         # calls general observation load function
@@ -110,8 +115,6 @@ class LoaderUI(object):
         ymin = int(self.ypix_min.text)
         ymax = int(self.ypix_max.text)
         self._span_select_callback(ymin, ymax)
-
-
 
     def _image_full_sensor_data(self):
         self.full_sensor_ax.clear()
