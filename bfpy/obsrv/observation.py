@@ -7,6 +7,7 @@ class Observation(object):
         self.filepath = None
         self.data = None
         self.wavelength = None
+        self.loaded = False
         self.__pol_angle = pol_angle
 
     @property
@@ -35,9 +36,7 @@ class Observation(object):
         loader = LoaderUI(self.__pol_angle)
         if loader.success:
             self._load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.spe_file.filepath)
-            return True
-        else:
-            return False
+        return self.loaded
 
     def _load_from_array(self, numpy_data, wavelength, filepath=None):
         # analyzes numpy_data and puts into proper place
@@ -45,11 +44,4 @@ class Observation(object):
         self.wavelength = wavelength
         if filepath is not None:
             self.filepath = filepath
-
-if __name__ == "__main__":
-    obs = Observation(0)
-    success = obs._load()
-    if success:
-        print(obs.filepath)
-    else:
-        print("load failed")
+        self.loaded = True
