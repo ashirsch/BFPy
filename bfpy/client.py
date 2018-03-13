@@ -12,7 +12,6 @@ class BFPSession(object):
             pol_children = []
         self.__pol_children = pol_children  # PolDataSet
         self.model = None                   # cvxpy Model or subclass of such
-        self.basis_parameters = None        # BasisParameters class or subclass of such
         self.vis = None                     # PlotSet
         self.verbose = verbose
 

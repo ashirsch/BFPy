@@ -2,7 +2,7 @@ import time
 import numba
 import numpy as np
 from bfpy.basis import basis
-from bfpy.basis.basis_factory import BasisParameters
+from bfpy.basis.basis import BasisParameters
 from bfpy.vis import visualization as bfpvis
 
 
@@ -24,15 +24,15 @@ v_bp = BasisParameters(basis_type="EDIso",
                        d=10.0, s=10.0, l=0.0,
                        wavelength=np.linspace(554.7395, 684.6601, 1024, dtype=np.float64),
                        wavelength_count=1024,
-                       pol_angle=np.pi/2,
+                       pol_angle=90,
                        pad_w=False, trim_w=True)
 
 t0 = time.time()
 # ========= TEST CODE HERE =========
-h_basis = basis.Basis()
+h_basis = basis.Basis(0)
 h_basis.basis_parameters = h_bp
 h_basis.build()
-v_basis = basis.Basis()
+v_basis = basis.Basis(90)
 v_basis.basis_parameters = v_bp
 v_basis.build()
 # ==================================
