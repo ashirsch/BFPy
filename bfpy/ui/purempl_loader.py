@@ -28,6 +28,16 @@ class LoaderUI(object):
         self.chk_full_lambda = CheckButtons(axfull_lambda, ['Full Lambda'], [True])
         self.chk_full_lambda.on_clicked(self._full_lambda_callback)
 
+        axpix_min = plt.axes([0.40, 0.17, 0.05, 0.07])
+        self.ypix_min = TextBox(axpix_min, 'Sel. Lower \nbound ', '0')
+
+        axpix_max = plt.axes([0.55, 0.17, 0.05, 0.07])
+        self.ypix_max = TextBox(axpix_max, 'Sel. Upper \nbound ', '0')
+
+        axrefresh = plt.axes([0.75, 0.17, 0.2, 0.07])
+        self.refresh_selection = Button(axrefresh, 'Refresh Selection')
+        self.refresh_selection.on_clicked(self._refresh_selection_callback)
+
         axpol_angle = plt.axes([0.2, 0.17, 0.05, 0.07])
         txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0')
 
@@ -45,9 +55,11 @@ class LoaderUI(object):
     def _span_select_callback(self, ymin, ymax):
         print("(%3.2f) --> (%3.2f)" % (ymin, ymax))
         ymin = int(np.floor(ymin))
-        ymax = int(np.floor(ymax))
+        ymax = int(np.ceil(ymax))
         self.selected_data = self.full_sensor_data[ymin:ymax+1,:]
-        self._image_selected_data()
+        self.ypix_min.set_val(str(ymin))
+        self.ypix_max.set_val(str(ymax))
+        self._image_selected_data(ymin, ymax)
 
 
     def _toggle_selector(self, event):
@@ -94,15 +106,27 @@ class LoaderUI(object):
                                               spancoords='data',
                                               interactive=True)
 
+    def _refresh_selection_callback(self, event):
+        ymin = int(self.ypix_min.text)
+        ymax = int(self.ypix_max.text)
+        self._span_select_callback(ymin, ymax)
+
+
 
     def _image_full_sensor_data(self):
         self.full_sensor_ax.clear()
         self._full_lambda_callback(None)
         self.full_sensor_ax.imshow(self.full_sensor_data)
+        self.full_sensor_ax.set_title('Source Data')
 
-    def _image_selected_data(self):
+    def _image_selected_data(self, ymin, ymax):
         self.selected_ax.clear()
         self.selected_ax.imshow(self.selected_data)
+        title = 'Selected: {0} rows ({1} -> {2})\n' \
+                '{3} wavelengths ({4:.3f} -> {5:.3f})'.format(self.selected_data.shape[0], ymin, ymax,
+                                                     self.selected_data.shape[1], self.spe_file.wavelength[0],
+                                                     self.spe_file.wavelength[-1])
+        self.selected_ax.set_title(title)
 
 
 if __name__ == "__main__":
