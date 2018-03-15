@@ -7,6 +7,8 @@ import time
 import pickle
 import matplotlib.pyplot as plt
 
+# FIRST SUCCESSFUL FIT - Time 2 minutes - see pickled files for quick loading and result.
+
 # sess = bfpy.BFPSession()
 #
 # sess.load(90)
