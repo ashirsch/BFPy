@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, RectangleSelector, TextBox, CheckButtons, SpanSelector
@@ -15,39 +16,44 @@ class LoaderUI(object):
         self.__pol_angle = pol_angle
         self.success = False
 
-        fig, (self.full_sensor_ax, self.selected_ax) = plt.subplots(1, 2)
-        plt.subplots_adjust(bottom=0.4)
+        dir = os.path.dirname(__file__)
+        filename = os.path.join(dir, 'style', 'custom-wa.mplstyle')
+        plt.style.use(filename)
+
+        fig = plt.figure()
+        fig.set_size_inches(20, 12, forward=True)
         fig.canvas.set_window_title('Load {0} Deg. Polarized Data'.format(self.__pol_angle))
 
+        grid_shape = (16, 28)
         # Make open, load, draw buttons
-        axopen = plt.axes([0.05, 0.05, 0.2, 0.07])
-        axload = plt.axes([0.75, 0.05, 0.2, 0.07])
-        axfull_lambda = plt.axes([0.40, 0.05, 0.2, 0.07])
-        bload = Button(axload, 'Load Selected')
+        self.full_sensor_ax = plt.subplot2grid(grid_shape, (0,0), colspan=13, rowspan=13)
+        self.selected_ax = plt.subplot2grid(grid_shape, (0, 15), colspan=13, rowspan=4)
+        axopen = plt.subplot2grid(grid_shape, (14,4), colspan=4)
+        axload = plt.subplot2grid(grid_shape, (14,20), colspan=4)
+        axfull_lambda = plt.subplot2grid(grid_shape, (11,16), colspan=4)
+        axpix_min = plt.subplot2grid(grid_shape, (7,16), colspan=4)
+        axpix_max = plt.subplot2grid(grid_shape, (7,23), colspan=4)
+        axrefresh = plt.subplot2grid(grid_shape, (11, 23), colspan=4)
+        axpol_angle = plt.subplot2grid(grid_shape, (9, 23), colspan=4)
+
+        bload = Button(axload, 'Load Selected', color='0.25', hovercolor='0.3')
         bload.on_clicked(self._load_callback)
-        bopen = Button(axopen, 'Open File')
+        bopen = Button(axopen, 'Open File', color='0.25', hovercolor='0.3')
         bopen.on_clicked(self._open_callback)
 
         self.chk_full_lambda = CheckButtons(axfull_lambda, ['Full Lambda'], [True])
         self.chk_full_lambda.on_clicked(self._full_lambda_callback)
 
-        axpix_min = plt.axes([0.40, 0.17, 0.05, 0.07])
-        self.ypix_min = TextBox(axpix_min, 'Sel. Lower \nbound ', '0')
+        self.ypix_min = TextBox(axpix_min, 'Sel. Lower \nbound ', '0', color='0.25', hovercolor='0.3')
 
-        axpix_max = plt.axes([0.55, 0.17, 0.05, 0.07])
-        self.ypix_max = TextBox(axpix_max, 'Sel. Upper \nbound ', '0')
+        self.ypix_max = TextBox(axpix_max, 'Sel. Upper \nbound ', '0', color='0.25', hovercolor='0.3')
 
-        axrefresh = plt.axes([0.75, 0.17, 0.2, 0.07])
-        self.refresh_selection = Button(axrefresh, 'Refresh Selection')
+        self.refresh_selection = Button(axrefresh, 'Refresh Selection', color='0.25', hovercolor='0.3')
         self.refresh_selection.on_clicked(self._refresh_selection_callback)
 
-        axpol_angle = plt.axes([0.2, 0.17, 0.05, 0.07])
-        txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0')
-
-        print("\n      click  -->  release")
+        txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0', color='0.25', hovercolor='0.3')
 
         self._full_lambda_callback(None)
-        plt.connect('key_press_event', self._toggle_selector)
 
         plt.show(block=True)
 
@@ -57,22 +63,13 @@ class LoaderUI(object):
         print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, y1, x2, y2))
 
     def _span_select_callback(self, ymin, ymax):
-        print("(%3.2f) --> (%3.2f)" % (ymin, ymax))
         ymin = int(np.floor(ymin))
         ymax = int(np.ceil(ymax))
+        print("(%3.2f) --> (%3.2f)" % (ymin, ymax))
         self.selected_data = self.full_sensor_data[ymin:ymax+1,:]
         self.ypix_min.set_val(str(ymin))
         self.ypix_max.set_val(str(ymax))
         self._image_selected_data(ymin, ymax)
-
-    def _toggle_selector(self, event):
-        print(' Key pressed.')
-        if event.key in ['Q', 'q'] and self.selector.active:
-            print(' RectangleSelector deactivated.')
-            self.selector.set_active(False)
-        if event.key in ['A', 'a'] and not self.selector.active:
-            print(' RectangleSelector activated.')
-            self.selector.set_active(True)
 
     def _load_callback(self, event):
         print('Load clicked')
@@ -102,11 +99,11 @@ class LoaderUI(object):
         chk_status = self.chk_full_lambda.get_status()
         if chk_status[0]:
             self.selector = SpanSelector(self.full_sensor_ax, self._span_select_callback, direction='vertical',
-                                         minspan=5, useblit=False, span_stays=False,
+                                         minspan=5, useblit=True, span_stays=False,
                                          rectprops=dict(facecolor='red', alpha=0.2))
         else:
             self.selector = RectangleSelector(self.full_sensor_ax, self._rect_select_callback,
-                                              drawtype='box', useblit=False,
+                                              drawtype='box', useblit=True,
                                               button=[1, 3],  # don't use middle button
                                               minspanx=1, minspany=0.1,
                                               spancoords='data',
@@ -120,12 +117,12 @@ class LoaderUI(object):
     def _image_full_sensor_data(self):
         self.full_sensor_ax.clear()
         self._full_lambda_callback(None)
-        self.full_sensor_ax.imshow(self.full_sensor_data)
+        self.full_sensor_ax.imshow(self.full_sensor_data, aspect='auto')
         self.full_sensor_ax.set_title('Source Data')
 
     def _image_selected_data(self, ymin, ymax):
         self.selected_ax.clear()
-        self.selected_ax.imshow(self.selected_data)
+        self.selected_ax.imshow(self.selected_data, aspect='auto')
         title = 'Selected: {0} rows ({1} -> {2})\n' \
                 '{3} wavelengths ({4:.3f} -> {5:.3f})'.format(self.selected_data.shape[0], ymin, ymax,
                                                      self.selected_data.shape[1], self.spe_file.wavelength[0],

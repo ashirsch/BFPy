@@ -1,0 +1,30 @@
+# Custom Wide-angle matplotlib style
+figure.facecolor: 212121
+text.color: F8F8F2
+axes.labelcolor: F8F8F2
+legend.frameon: False
+legend.numpoints: 1
+legend.scatterpoints: 1
+xtick.direction: out
+ytick.direction: out
+xtick.color: F8F8F2
+ytick.color: F8F8F2
+axes.axisbelow: True
+image.cmap: inferno
+font.family: sans-serif
+font.size: 16
+font.sans-serif: DejaVu Sans, Arial, Liberation Sans, Bitstream Vera Sans, sans-serif
+grid.linestyle: -
+lines.solid_capstyle: round
+axes.grid: False
+axes.facecolor: 0.25
+axes.edgecolor: white
+axes.linewidth: 0
+axes.labelsize: small
+grid.color: white
+xtick.major.size: 0
+ytick.major.size: 0
+xtick.minor.size: 0
+ytick.minor.size: 0
+xtick.labelsize: x-small
+ytick.labelsize: x-small

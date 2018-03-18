@@ -15,5 +15,6 @@ def basis_func_plot(basis, wavelength_ind, crop=False):
     else:
         plot_width = basis.basis_parameters.ux_count
     plot_col = np.reshape(plot_col, (basis.basis_parameters.uy_count, plot_width), order='F')
-    plt.imshow(plot_col)
+    plt.imshow(plot_col, extent=[basis.basis_parameters.ux_range[0], basis.basis_parameters.ux_range[1],
+                                  basis.basis_parameters.uy_range[0], basis.basis_parameters.uy_range[1]])
     plt.show()
