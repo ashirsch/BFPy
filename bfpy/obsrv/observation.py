@@ -8,7 +8,7 @@ class Observation(object):
         self.data = None
         self.wavelength = None
         self.loaded = False
-        self.__pol_angle = pol_angle
+        self.pol_angle = pol_angle
 
     @property
     def n_frames(self):
@@ -33,7 +33,7 @@ class Observation(object):
 
     # TODO: Allow for loading of multiple frames (and sum and average options)
     def _load(self):
-        loader = LoaderUI(self.__pol_angle)
+        loader = LoaderUI(self.pol_angle)
         if loader.success:
             self._load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.spe_file.filepath)
         return self.loaded

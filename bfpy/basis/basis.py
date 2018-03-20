@@ -9,7 +9,7 @@ class Basis(object):
         self.basis_matrix = None
         self.built = False
         self.basis_parameters = None
-        self.__pol_angle = pol_angle
+        self.pol_angle = pol_angle
 
     def build(self):
         builder = self._make_builder()
@@ -33,7 +33,7 @@ class Basis(object):
     def is_defined(self):
         defined = True
         defined = defined and self.basis_parameters._verify_state()
-        defined = defined and self.__pol_angle is not None
+        defined = defined and self.pol_angle is not None
         return defined
 
 
