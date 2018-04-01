@@ -2,7 +2,7 @@ import bfpy
 import bfpy.vis.visualization as bfpvis
 import numpy as np
 import scipy.sparse as sp
-from cvxpy import *
+import cvxpy as cvx
 import time
 import pickle
 import matplotlib.pyplot as plt
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 #
 # with open('test_sess.p', 'wb') as f:
 #     pickle.dump(sess, f)
-with open('test_sess.p', 'rb') as f:
+with open('./test_sess.p', 'rb') as f:
     sess = pickle.load(f)
 print('loaded')
 basis_rows = sess.data_set(90).basis.basis_matrix.shape[0]
@@ -30,10 +30,9 @@ n = sess.data_set(90).basis.basis_matrix.shape[1] + 1
 
 o = sp.csc_matrix((np.ones(basis_rows,),(np.arange(basis_rows), np.zeros(basis_rows,))))
 A = sp.hstack((sess.data_set(90).basis.basis_matrix, o))
-# A = sess.data_set(0).basis.basis_matrix
-H = Constant(A)
+H = cvx.Constant(A)
 
-b = Constant(sess.data_set(90).observation.data.reshape((180*1024,1), order='F'))
+b = cvx.Constant(sess.data_set(90).observation.data.reshape((180*1024,1), order='F'))
 plt.imshow(sess.data_set(90).observation.data)
 plt.show()
 bfpvis.basis_func_plot(sess.data_set(90).basis, 179)
@@ -44,17 +43,17 @@ bfpvis.basis_func_plot(sess.data_set(90).basis, 179)
 # plt.show()
 
 
-x = Variable(n)
+x = cvx.Variable(n)
 print('variables and constants made')
 print('defining objective')
-objective = Minimize(norm2(H*x - b))
+objective = cvx.Minimize(cvx.norm2(H*x - b))
 print('defining constraints')
-constraints = [x >= 0]
+constraints = [x[:-1] >= 0]
 print('defining problem')
-prob = Problem(objective, constraints)
+prob = cvx.Problem(objective, constraints)
 print('\nSolving...')
 t0 = time.time()
-result = prob.solve(solver=MOSEK, verbose=True)
+result = prob.solve(solver=cvx.MOSEK, verbose=True)
 t1 = time.time()
 with open('test_res.p', 'wb') as f:
     pickle.dump(x, f)
