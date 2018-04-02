@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.sparse import csc_matrix, hstack
 from numba import vectorize
-from ..fields import fields
+from ..fields import field
 
 
 class EDIsoBuilder:
@@ -11,7 +11,7 @@ class EDIsoBuilder:
 
     def __init__(self, basis_parameters):
         self.__bp = basis_parameters
-        self.field_set = fields.Field(basis_parameters)
+        self.field_set = field.Field(basis_parameters)
 
     def build(self):
         self.field_set.calculate_fields(["ED", "MD"])
