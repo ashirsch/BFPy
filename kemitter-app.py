@@ -7,46 +7,52 @@ import os
 import spe_loader
 
 
-def modify_doc(doc):
-    def update_file_browser():
-        active_dir = directory_input.value
+class BokehLoader(object):
+
+    def __init__(self):
+        # setup widgets
+        self.directory_input = TextInput(placeholder='Directory', value=os.path.join(os.getcwd(), 'data'))
+        self.show_files_button = Button(label='Show Files', button_type='primary')
+        self.file_view = MultiSelect(size=5)
+        self.open_file_button = Button(label='Open File', button_type='warning')
+
+        # connect button callbacks
+        self.show_files_button.on_click(self.update_file_browser)
+        self.open_file_button.on_click(self.open_file_callback)
+
+        # build the layout
+        controls = [self.directory_input, self.show_files_button, self.file_view, self.open_file_button]
+        widgets = widgetbox(*controls, sizing_mode='fixed')
+        self.layout = layout(children=[widgets],
+                   sizing_mode='fixed')
+
+        # set defaults
+        self.initialize_ui()
+
+    def update_file_browser(self):
+        active_dir = self.directory_input.value
         if os.path.isdir(active_dir):
-            file_view.options = [f for f in os.listdir(active_dir) if os.path.isfile(os.path.join(active_dir, f))]
+            self.file_view.options = [f for f in os.listdir(active_dir) if os.path.isfile(os.path.join(active_dir, f))]
         else:
-            file_view.options = ['INVALID DIRECTORY']
+            self.file_view.options = ['INVALID DIRECTORY']
 
 
-    def open_file_callback():
-        path_to_file = os.path.join(directory_input.value, file_view.value[0])
+    def open_file_callback(self):
+        path_to_file = os.path.join(self.directory_input.value, self.file_view.value[0])
         if not os.path.isfile(path_to_file):
             return
         spe_file = spe_loader.load_from_files([path_to_file])
         full_sensor_data = spe_file.data[0][0]
 
 
-    def initialize():
-        update_file_browser()
+    def initialize_ui(self):
+        self.update_file_browser()
 
-    # setup widgets
-    directory_input = TextInput(placeholder='Directory', value=os.path.join(os.getcwd(), 'data'))
-    show_files_button = Button(label='Show Files', button_type='primary')
-    file_view = MultiSelect(size=5)
-    open_file_button = Button(label='Open File', button_type='warning')
 
-    # connect button callbacks
-    show_files_button.on_click(update_file_browser)
-    open_file_button.on_click(open_file_callback)
+def modify_doc(doc):
+    doc.add_root(loader.layout)
 
-    controls = [directory_input, show_files_button, file_view, open_file_button]
-
-    widgets = widgetbox(*controls, sizing_mode='fixed')
-
-    l = layout(children=[widgets],
-               sizing_mode='fixed')
-
-    initialize()
-    doc.add_root(l)
-
+loader = BokehLoader()
 server = Server({'/': modify_doc}, num_procs=1)
 server.start()
 
