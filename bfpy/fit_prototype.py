@@ -8,7 +8,7 @@ import pickle
 import matplotlib.pyplot as plt
 
 # FIRST SUCCESSFUL FIT - Time 2 minutes - see pickled files for quick loading and result.
-
+# Ridge Regression implemented - Time ~ 3 minutes (longer setup time)
 # sess = bfpy.BFPSession()
 #
 # sess.load(90)
@@ -31,6 +31,8 @@ n = sess.data_set(90).basis.basis_matrix.shape[1] + 1
 o = sp.csc_matrix((np.ones(basis_rows,),(np.arange(basis_rows), np.zeros(basis_rows,))))
 A = sp.hstack((sess.data_set(90).basis.basis_matrix, o))
 H = cvx.Constant(A)
+D = np.diag(np.ones((A.shape[1] - 1,)), k=1) - np.diag(np.ones((A.shape[1],)))
+D = cvx.Constant(D[:-1, :])
 
 b = cvx.Constant(sess.data_set(90).observation.data.reshape((180*1024,1), order='F'))
 plt.imshow(sess.data_set(90).observation.data)
@@ -42,11 +44,11 @@ bfpvis.basis_func_plot(sess.data_set(90).basis, 179)
 # plt.imshow(b.reshape((180,1024),order='F'))
 # plt.show()
 
-
+alpha = 0.025
 x = cvx.Variable(n)
 print('variables and constants made')
 print('defining objective')
-objective = cvx.Minimize(cvx.norm2(H*x - b))
+objective = cvx.Minimize(cvx.norm2(H*x - b) + alpha*cvx.norm2(D*x))
 print('defining constraints')
 constraints = [x[:-1] >= 0]
 print('defining problem')
