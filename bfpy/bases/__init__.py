@@ -1,1 +1,0 @@
-from .isometric import IsometricEmitter

@@ -6,7 +6,7 @@ import bfpy.vis.visualization as bfpvis
 
 print("starting numba with {0} threads".format(numba.config.NUMBA_NUM_THREADS))
 
-h_basis = bfpy.bases.IsometricEmitter(pol_angle=90, dipoles=("ED", "MD"))
+h_basis = bfpy.basis.IsometricEmitter(pol_angle=90, dipoles=("ED", "MD"))
 h_basis.define(n2=1.7, n3=1.5)
 h_basis.define_observation_parameters(np.linspace(554, 660, 1024, dtype=np.float64), 180)
 

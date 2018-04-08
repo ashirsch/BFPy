@@ -2,7 +2,7 @@
 import sys
 
 from bfpy.obsrv import observation
-from bfpy.bases import basis
+from bfpy.basis import basis
 
 
 class BFPSession(object):
