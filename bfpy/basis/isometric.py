@@ -15,7 +15,8 @@ class IsometricEmitter(Basis):
                n0=1.0, n1=1.0, n2=1.0, n3=1.0,
 			   d=10.0, s=10.0, l=0.0,
 			   NA=1.3,
-			   pad_w=False, trim_w=True):
+			   pad_w=False, trim_w=True,
+               wavelength=None, k_count=None, open_slit=True):
         try:
             assert n0 > 0
             assert n1 > 0
@@ -36,6 +37,8 @@ class IsometricEmitter(Basis):
                                                 pol_angle=self.pol_angle,
                                                 pad_w=pad_w,
                                                 trim_w=trim_w)
+        if wavelength is not None and k_count is not None:
+            self.define_observation_parameters(wavelength, k_count, open_slit)
 
     def build(self):
         field_set = field.Field(self.basis_parameters)
@@ -62,7 +65,7 @@ class IsometricEmitter(Basis):
         if len(isometric_bases) > 1:
             basis = sp.hstack(isometric_bases)
         else:
-            basis = isometric_bases
+            basis = isometric_bases[0]
         # trim basis based on lambda range TODO: work on x-y flipping
         if self.basis_parameters.trim_w:
             basis = self.basis_trim(basis)
@@ -73,11 +76,11 @@ class IsometricEmitter(Basis):
 
 @vectorize("float64(float64,complex128,complex128,complex128,complex128,complex128,complex128)",
            target='parallel', nopython=True)
-def isometric_emission(pol_angle, xDx, yDx, xDy, yDy, xDz, yDz):
-    isometric = np.square(np.abs(np.cos(pol_angle) * yDx +
-                                 np.sin(pol_angle) * xDx)) + \
-                np.square(np.abs(np.cos(pol_angle) * yDy +
-                                 np.sin(pol_angle) * xDy)) + \
-                np.square(np.abs(np.cos(pol_angle) * yDz +
-                                 np.sin(pol_angle) * xDz))
+def isometric_emission(pol_angle, xpol_x, ypol_x, xpol_y, ypol_y, xpol_z, ypol_z):
+    isometric = np.square(np.abs(np.cos(pol_angle) * ypol_x +
+                                 np.sin(pol_angle) * xpol_x)) + \
+                np.square(np.abs(np.cos(pol_angle) * ypol_y +
+                                 np.sin(pol_angle) * xpol_y)) + \
+                np.square(np.abs(np.cos(pol_angle) * ypol_z +
+                                 np.sin(pol_angle) * xpol_z))
     return isometric

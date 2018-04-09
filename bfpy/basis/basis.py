@@ -23,7 +23,8 @@ class Basis(object):
             self.basis_parameters.uy_count = k_count
             self.basis_parameters.ux_count = k_count if open_slit else 1
         else:
-            print("Basis parameters must be defined prior to loading of observation dependent parameters.")
+            print("Geometric and optical parameters must be defined prior to loading of "
+                  "observation-dependent parameters.")
 
     @property
     def is_defined(self):
