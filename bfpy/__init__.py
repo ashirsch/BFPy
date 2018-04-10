@@ -1,2 +1,2 @@
-from . import basis, fit
+from . import basis, model
 from .obsrv.observation import Observation
