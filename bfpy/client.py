@@ -142,4 +142,4 @@ class PolDataSet(object):
                                                             d, s, l,
                                                             self.pol_angle)
         if self.observation.loaded:
-            self.basis.basis_parameters._set_wavelength(self.observation.wavelength, pad_w, trim_w)
+            self.basis.basis_parameters.set_wavelength(self.observation.wavelength)

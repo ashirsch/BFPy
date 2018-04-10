@@ -1,7 +1,7 @@
 import numpy as np
 from numba import vectorize, jit, prange
-import bfpy.basis.fields.fresnel as frs
-import bfpy.basis.fields.dipole as dip
+from . import fresnel as frs
+from . import dipole as dip
 
 class Field(object):
     """

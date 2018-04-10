@@ -1,33 +1,30 @@
 import time
+from abc import ABC, abstractmethod
 import numpy as np
+import scipy.sparse as sp
 
-from bfpy.basis.builders.ediso import EDIsoBuilder
 
-
-class Basis(object):
-    def __init__(self, pol_angle):
+class Basis(ABC):
+    """Abstract base class for bases"""
+    def __init__(self):
         self.basis_matrix = None
-        self.built = False
+        self.is_built = False
         self.basis_parameters = None
-        self.pol_angle = pol_angle
+        self.pol_angle = None
+        super().__init__()
 
+    @abstractmethod
     def build(self):
-        builder = self._make_builder()
+        pass
 
-        t0 = time.time()
-        self.basis_matrix = builder.build()
-        t1 = time.time()
-
-        self.built = True
-        print(self.basis_parameters.basis_type + " basis successfully built.")
-        print("Elapsed build time: {0:.3f}".format(t1-t0))
-
-    def _make_builder(self):
-        if self.basis_parameters.basis_type == "EDIso":
-            return EDIsoBuilder(self.basis_parameters)
+    def define_observation_parameters(self, wavelength, k_count, open_slit=True):
+        if self.basis_parameters is not None:
+            self.basis_parameters.set_wavelength(wavelength)
+            self.basis_parameters.uy_count = k_count
+            self.basis_parameters.ux_count = k_count if open_slit else 1
         else:
-            print("Invalid builder type: " + self.basis_parameters.basis_type)
-            pass
+            print("Geometric and optical parameters must be defined prior to loading of "
+                  "observation-dependent parameters.")
 
     @property
     def is_defined(self):
@@ -35,6 +32,36 @@ class Basis(object):
         defined = defined and self.basis_parameters._verify_state()
         defined = defined and self.pol_angle is not None
         return defined
+
+    def sparse_column_major_offset(self, matrix):
+        # flatten data matrix by column
+        flattened_length = self.basis_parameters.ux_count * self.basis_parameters.uy_count * \
+                          self.basis_parameters.wavelength_count
+        flat_matrix = np.reshape(matrix, (flattened_length,), order='F')
+        # load into sparse matrix
+        return sp.csc_matrix((flat_matrix, (self.sparse_rows(), self.sparse_cols())))
+
+    def basis_trim(self, matrix):
+        begin_ind = int(self.basis_parameters.uy_count * np.floor(self.basis_parameters.ux_count/2))
+        if self.basis_parameters.pad_w:
+            begin_ind += int(self.basis_parameters.uy_count * np.floor((self.basis_parameters.ux_count - 1)/2))
+
+        final_pix_row_ind = matrix.shape[0] - 1
+        end_ind = int(final_pix_row_ind - self.basis_parameters.uy_count * np.floor((self.basis_parameters.ux_count - 1)/2))
+        if self.basis_parameters.pad_w:
+            end_ind -= int(self.basis_parameters.uy_count * np.floor(self.basis_parameters.ux_count/2))
+
+        return matrix[begin_ind:(end_ind+1), :]
+
+    def sparse_rows(self): # , ux_count, uy_count, wavelength_count):
+        single_wavelength_rows = np.arange(0, self.basis_parameters.ux_count * self.basis_parameters.uy_count)
+        offset = np.arange(0, self.basis_parameters.uy_count * self.basis_parameters.wavelength_count, self.basis_parameters.uy_count)
+        rows = single_wavelength_rows.reshape(self.basis_parameters.ux_count * self.basis_parameters.uy_count, 1) + offset
+        return rows.flatten('F').astype(int)
+
+    def sparse_cols(self): # , ux_count, uy_count, wavelength_count):
+        single_wavelength_cols = np.arange(0, self.basis_parameters.wavelength_count)
+        return np.repeat(single_wavelength_cols, self.basis_parameters.ux_count * self.basis_parameters.uy_count).astype(int)
 
 
 class BasisParameters:
@@ -47,23 +74,24 @@ class BasisParameters:
     :type n3: float
     :type ux_range: tuple
     :type uy_range: tuple
-    :type ux_count: int
-    :type uy_count: int
     :type d: float
     :type s: float
     :type l: float
+    :type pol_angle: float
+    :type ux_count: int
+    :type uy_count: int
     :type wavelength: numpy.ndarray
     :type wavelength_count: int
-    :type pol_angle: float
     :type pad_w: bool
+    :type trim_w: bool
     """
 
     def __init__(self, basis_type,
                  n0, n1, n2o, n2e, n3,
                  ux_range, uy_range,
-                 ux_count, uy_count,
                  d, s, l,
                  pol_angle,
+                 ux_count=None, uy_count=None,
                  wavelength=None,
                  wavelength_count=None,
                  pad_w=False,
@@ -83,11 +111,17 @@ class BasisParameters:
         self.l          = l
         self.wavelength = wavelength
         self.wavelength_count = wavelength_count
-        self.pol_angle  = np.radians(pol_angle)
+        self.pol_angle_rad  = np.radians(pol_angle)
         self.pad_w      = pad_w
         self.trim_w     = trim_w
         self.orig_wavelength = wavelength
         self.orig_wavelength_count = wavelength_count
+
+    def set_wavelength(self, wavelength):
+        self.wavelength = wavelength
+        self.wavelength_count = len(wavelength)
+        self.orig_wavelength = wavelength
+        self.orig_wavelength_count = len(wavelength)
 
         if self.pad_w:
             self._pad_wavelength()
@@ -101,17 +135,6 @@ class BasisParameters:
 
         self.wavelength = np.hstack((pre_padding, self.wavelength, post_padding))
         self.wavelength_count = len(self.wavelength)
-
-    def _set_wavelength(self, wavelength, pad_w=False, trim_w=True):
-        self.wavelength = wavelength
-        self.wavelength_count = len(wavelength)
-        self.orig_wavelength = wavelength
-        self.orig_wavelength_count = len(wavelength)
-        self.pad_w = pad_w
-        self.trim_w = trim_w
-
-        if self.pad_w:
-            self._pad_wavelength()
 
     def _verify_state(self):
         assert self.basis_type
@@ -129,7 +152,7 @@ class BasisParameters:
         assert self.l is not None and self.l >= 0
         assert self.wavelength is not None
         assert self.wavelength_count == len(self.wavelength)
-        assert self.pol_angle is not None
+        assert self.pol_angle_rad is not None
         assert self.pad_w is not None
         assert self.trim_w is not None
         assert self.orig_wavelength is not None
