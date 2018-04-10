@@ -7,16 +7,14 @@ from .fields import field
 
 class IsometricEmitter(Basis):
 
-    def __init__(self, pol_angle, dipoles):
-        super().__init__(pol_angle)
-        self.dipoles = dipoles
+    def __init__(self, pol_angle,
+                 dipoles=('ED', 'MD'),
+                 n0=1.0, n1=1.0, n2=1.0, n3=1.0,
+			     d=10.0, s=10.0, l=0.0,
+			     NA=1.3,
+			     pad_w=False, trim_w=True,
+                 wavelength=None, k_count=None, open_slit=True):
 
-    def define(self,
-               n0=1.0, n1=1.0, n2=1.0, n3=1.0,
-			   d=10.0, s=10.0, l=0.0,
-			   NA=1.3,
-			   pad_w=False, trim_w=True,
-               wavelength=None, k_count=None, open_slit=True):
         try:
             assert n0 > 0
             assert n1 > 0
@@ -29,7 +27,9 @@ class IsometricEmitter(Basis):
         except AssertionError:
             print("Invalid argument given.")
             return
-
+        super().__init__()
+        self.pol_angle = pol_angle
+        self.dipoles = dipoles
         self.basis_parameters = BasisParameters(basis_type="ISOMETRIC",
                                                 n0=n0, n1=n1, n2o=n2, n2e=n2, n3=n3,
                                                 ux_range=(-NA, NA), uy_range=(-NA, NA),
@@ -45,17 +45,17 @@ class IsometricEmitter(Basis):
         field_set.calculate_fields(self.dipoles)
         isometric_bases = []
         if "ED" in self.dipoles:
-            ed_isometric = isometric_emission(self.basis_parameters.pol_angle,
+            ed_isometric = isometric_emission(self.basis_parameters.pol_angle_rad,
                                               field_set.xpol.ED.x, field_set.ypol.ED.x,
                                               field_set.xpol.ED.y, field_set.ypol.ED.y,
                                               field_set.xpol.ED.z, field_set.ypol.ED.z)
             ed_isometric = self.sparse_column_major_offset(ed_isometric)
             isometric_bases.append(ed_isometric)
         if "MD" in self.dipoles:
-            md_isometric = isometric_emission(self.basis_parameters.pol_angle,
-                                          field_set.xpol.MD.x, field_set.ypol.MD.x,
-                                          field_set.xpol.MD.y, field_set.ypol.MD.y,
-                                          field_set.xpol.MD.z, field_set.ypol.MD.z)
+            md_isometric = isometric_emission(self.basis_parameters.pol_angle_rad,
+                                              field_set.xpol.MD.x, field_set.ypol.MD.x,
+                                              field_set.xpol.MD.y, field_set.ypol.MD.y,
+                                              field_set.xpol.MD.z, field_set.ypol.MD.z)
             md_isometric = self.sparse_column_major_offset(md_isometric)
             isometric_bases.append(md_isometric)
         # for each ed / md

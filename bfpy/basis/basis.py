@@ -1,21 +1,21 @@
 import time
+from abc import ABC, abstractmethod
 import numpy as np
 import scipy.sparse as sp
 
 
-class Basis(object):
+class Basis(ABC):
     """Abstract base class for bases"""
-    def __init__(self, pol_angle):
+    def __init__(self):
         self.basis_matrix = None
-        self.built = False
+        self.is_built = False
         self.basis_parameters = None
-        self.pol_angle = pol_angle
+        self.pol_angle = None
+        super().__init__()
 
+    @abstractmethod
     def build(self):
-        raise NotImplementedError
-
-    def define(self):
-        raise NotImplementedError
+        pass
 
     def define_observation_parameters(self, wavelength, k_count, open_slit=True):
         if self.basis_parameters is not None:
@@ -111,7 +111,7 @@ class BasisParameters:
         self.l          = l
         self.wavelength = wavelength
         self.wavelength_count = wavelength_count
-        self.pol_angle  = np.radians(pol_angle)
+        self.pol_angle_rad  = np.radians(pol_angle)
         self.pad_w      = pad_w
         self.trim_w     = trim_w
         self.orig_wavelength = wavelength
@@ -152,7 +152,7 @@ class BasisParameters:
         assert self.l is not None and self.l >= 0
         assert self.wavelength is not None
         assert self.wavelength_count == len(self.wavelength)
-        assert self.pol_angle is not None
+        assert self.pol_angle_rad is not None
         assert self.pad_w is not None
         assert self.trim_w is not None
         assert self.orig_wavelength is not None

@@ -7,16 +7,14 @@ from .fields import field
 
 class OrientedEmitter(Basis):
 
-    def __init__(self, pol_angle, dipoles):
-        super().__init__(pol_angle)
-        self.dipoles = dipoles
-
-    def define(self,
-               n0=1.0, n1=1.0, n2o=1.0, n2e=1.0, n3=1.0,
-			   d=10.0, s=10.0, l=0.0,
-			   NA=1.3,
-			   pad_w=False, trim_w=True,
-               wavelength=None, k_count=None, open_slit=True):
+    def __init__(self, pol_angle,
+                 dipoles=('ED'),
+                 n0=1.0, n1=1.0, n2o=1.0, n2e=1.0, n3=1.0,
+			     d=10.0, s=10.0, l=0.0,
+			     NA=1.3,
+			     pad_w=False, trim_w=True,
+                 wavelength=None, k_count=None, open_slit=True):
+        super().__init__()
         try:
             assert n0 > 0
             assert n1 > 0
@@ -30,7 +28,8 @@ class OrientedEmitter(Basis):
         except AssertionError:
             print("Invalid argument given.")
             return
-
+        self.pol_angle = pol_angle
+        self.dipoles = dipoles
         self.basis_parameters = BasisParameters(basis_type="ORIENTED",
                                                 n0=n0, n1=n1, n2o=n2o, n2e=n2e, n3=n3,
                                                 ux_range=(-NA, NA), uy_range=(-NA, NA),
@@ -47,11 +46,11 @@ class OrientedEmitter(Basis):
 
         oriented_bases = []
         if "ED" in self.dipoles:
-            in_plane = in_plane_emission(self.basis_parameters.pol_angle, # TODO: Resolve need to store pol angle in two places
+            in_plane = in_plane_emission(self.basis_parameters.pol_angle_rad,
                                          field_set.xpol.ED.x, field_set.ypol.ED.x,
                                          field_set.xpol.ED.y, field_set.ypol.ED.y)
             in_plane = self.sparse_column_major_offset(in_plane)
-            out_plane = out_plane_emission(self.basis_parameters.pol_angle,
+            out_plane = out_plane_emission(self.basis_parameters.pol_angle_rad,
                                            field_set.xpol.ED.z, field_set.ypol.ED.z)
             out_plane = self.sparse_column_major_offset(out_plane)
             oriented_bases.append(in_plane)

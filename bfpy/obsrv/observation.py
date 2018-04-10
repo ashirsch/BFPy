@@ -3,12 +3,12 @@ from bfpy.ui import LoaderUI
 # noinspection PyPep8Naming
 class Observation(object):
 
-    def __init__(self, pol_angle):
+    def __init__(self):
         self.filepath = None
         self.data = None
         self.wavelength = None
         self.loaded = False
-        self.pol_angle = pol_angle
+        self.pol_angle = None
 
     @property
     def n_frames(self):
@@ -32,16 +32,17 @@ class Observation(object):
             return 0
 
     # TODO: Allow for loading of multiple frames (and sum and average options)
-    def _load(self):
-        loader = LoaderUI(self.pol_angle)
+    def load(self):
+        loader = LoaderUI()
         if loader.success:
-            self._load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.spe_file.filepath)
+            self.load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.pol_angle, loader.spe_file.filepath)
         return self.loaded
 
-    def _load_from_array(self, numpy_data, wavelength, filepath=None):
+    def load_from_array(self, numpy_data, wavelength, pol_angle, filepath=None):
         # analyzes numpy_data and puts into proper place
         self.data = numpy_data
         self.wavelength = wavelength
+        self.pol_angle = pol_angle
         if filepath is not None:
             self.filepath = filepath
         self.loaded = True

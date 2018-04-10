@@ -8,12 +8,12 @@ import spe_loader
 
 class LoaderUI(object):
 
-    def __init__(self, pol_angle=None):
+    def __init__(self):
         self.full_sensor_data = None
         self.selected_data = None
         self.spe_file = None
         self.selector = None
-        self.__pol_angle = pol_angle
+        self.pol_angle = None
         self.success = False
 
         dir = os.path.dirname(__file__)
@@ -22,7 +22,7 @@ class LoaderUI(object):
 
         fig = plt.figure()
         fig.set_size_inches(20, 12, forward=True)
-        fig.canvas.set_window_title('Load {0} Deg. Polarized Data'.format(self.__pol_angle))
+        fig.canvas.set_window_title('Load Data')
 
         grid_shape = (16, 28)
         # Make open, load, draw buttons
@@ -51,7 +51,7 @@ class LoaderUI(object):
         self.refresh_selection = Button(axrefresh, 'Refresh Selection', color='0.25', hovercolor='0.3')
         self.refresh_selection.on_clicked(self._refresh_selection_callback)
 
-        txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0', color='0.25', hovercolor='0.3')
+        self.txt_pol_angle = TextBox(axpol_angle, 'Pol. Angle \n (deg) ', '0', color='0.25', hovercolor='0.3')
 
         self._full_lambda_callback(None)
 
@@ -74,6 +74,7 @@ class LoaderUI(object):
     def _load_callback(self, event):
         print('Load clicked')
         if self.spe_file is not None and self.selected_data is not None:
+            self.pol_angle = float(self.txt_pol_angle.text)
             self.success = True
             plt.close()
         else:
