@@ -9,35 +9,44 @@ import matplotlib.pyplot as plt
 
 # FIRST SUCCESSFUL FIT - Time 2 minutes - see pickled files for quick loading and result.
 # Ridge Regression implemented - Time ~ 3 minutes (longer setup time)
-# sess = bfpy.BFPSession()
-#
-# sess.load(90)
-#
-# sess.data_set(90).define_basis(basis_type='EDIso',n0=1.0, n1=1.0, n2o=1.7, n2e=1.7, n3=1.5,
-#                        ux_range=(-1.3,1.3), uy_range=(-1.3,1.3),
-#                        ux_count=180, uy_count=180,
-#                        d=10.0, s=10.0, l=0.0, pad_w=False, trim_w=True)
-#
-# sess.build_bases()
-#
+sess = bfpy.BFPSession()
+
+sess.load(90)
+sess.load(0)
+
+sess.data_set(90).define_basis(basis_type='EDIso',n0=1.0, n1=1.0, n2o=1.7, n2e=1.7, n3=1.5,
+                       ux_range=(-1.3,1.3), uy_range=(-1.3,1.3),
+                       ux_count=180, uy_count=180,
+                       d=10.0, s=10.0, l=0.0, pad_w=False, trim_w=True)
+sess.data_set(0).define_basis(basis_type='EDIso',n0=1.0, n1=1.0, n2o=1.7, n2e=1.7, n3=1.5,
+                       ux_range=(-1.3,1.3), uy_range=(-1.3,1.3),
+                       ux_count=180, uy_count=180,
+                       d=10.0, s=10.0, l=0.0, pad_w=False, trim_w=True)
+
+sess.build_bases()
+
 # with open('test_sess.p', 'wb') as f:
 #     pickle.dump(sess, f)
-with open('./test_sess.p', 'rb') as f:
-    sess = pickle.load(f)
+# with open('./test_sess.p', 'rb') as f:
+#     sess = pickle.load(f)
 print('loaded')
-basis_rows = sess.data_set(90).basis.basis_matrix.shape[0]
-n = sess.data_set(90).basis.basis_matrix.shape[1] + 1
+A = sp.vstack([sess.data_set(0).basis.basis_matrix, sess.data_set(90).basis.basis_matrix])
+
+basis_rows = A.shape[0]
+n = A.shape[1] + 1
 
 o = sp.csc_matrix((np.ones(basis_rows,),(np.arange(basis_rows), np.zeros(basis_rows,))))
-A = sp.hstack((sess.data_set(90).basis.basis_matrix, o))
+A = sp.hstack((A, o))
 H = cvx.Constant(A)
 D = np.diag(np.ones((A.shape[1] - 1,)), k=1) - np.diag(np.ones((A.shape[1],)))
 D = cvx.Constant(D[:-1, :])
 
-b = cvx.Constant(sess.data_set(90).observation.data.reshape((180*1024,1), order='F'))
-plt.imshow(sess.data_set(90).observation.data)
-plt.show()
-bfpvis.basis_func_plot(sess.data_set(90).basis, 179)
+b = np.vstack((sess.data_set(0).observation.data.reshape((180*1024,1), order='F'),
+               sess.data_set(90).observation.data.reshape((180*1024,1), order='F')))
+b = cvx.Constant(b)
+# plt.imshow(sess.data_set(90).observation.data)
+# plt.show()
+# bfpvis.basis_func_plot(sess.data_set(90).basis, 179)
 ### MAKE b from basis directly just to test
 # x_test = np.random.rand(n, 1)
 # b = A.todense() @ x_test
