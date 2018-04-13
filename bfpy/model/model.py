@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 class Model(ABC):
 
     def __init__(self):
-        self.__pol_children = None          # list of PolDataSets
+        self.__pol_children = None  # list of PolDataSets
         self.rates = None
         self.counts = None
 
@@ -53,7 +53,7 @@ class Model(ABC):
     @abstractmethod
     def run(self, bases, observations):
         self._load_into_pol_data_sets(bases, observations)
-        # TODO: Define observation dependent basis parameters.
+
         for b in bases:
             if not b.is_built:
                 b.build()
@@ -61,7 +61,7 @@ class Model(ABC):
     def build_bases(self):
         for angle in self.polarization_angles:
             active_basis = self.data_set(angle).basis
-            if active_basis.is_defined and not active_basis.is_built:
+            if not active_basis.is_built:
                 active_basis.build()
 
     def visualize(self):
@@ -88,6 +88,7 @@ class Model(ABC):
         self.__pol_children = []
         for i in range(len(pol_angles)):
             self.__pol_children.append(PolDataSet(pol_angles[i], observations[i], bases[i]))
+            bases[i].define_observation_parameters(observations[i].wavelength, observations[i].angular_pixel_count)
 
 class PolDataSet(object):
 

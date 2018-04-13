@@ -41,6 +41,9 @@ class IsometricEmitter(Basis):
             self.define_observation_parameters(wavelength, k_count, open_slit)
 
     def build(self):
+        if not self.is_defined:
+            raise RuntimeError("Basis is not well-defined. Ensure that all parameters are assigned properly.")
+
         field_set = field.Field(self.basis_parameters)
         field_set.calculate_fields(self.dipoles)
         isometric_bases = []
@@ -71,7 +74,7 @@ class IsometricEmitter(Basis):
             basis = self.basis_trim(basis)
         # return the single sparse matrix
         self.basis_matrix = basis
-        self.built = True
+        self.is_built = True
 
 
 @vectorize("float64(float64,complex128,complex128,complex128,complex128,complex128,complex128)",
