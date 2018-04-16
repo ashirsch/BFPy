@@ -2,17 +2,23 @@ import numpy as np
 import bfpy
 import pickle
 
-h_obs = bfpy.Observation()
-h_obs.load()
+# h_obs = bfpy.Observation()
+# h_obs.load()
+#
+# v_obs = bfpy.Observation()
+# v_obs.load()
+#
+# h_basis = bfpy.basis.IsometricEmitter(pol_angle=90, n2=1.7, n3=1.5)
+# v_basis = bfpy.basis.IsometricEmitter(pol_angle=0, n2=1.7, n3=1.5)
+#
+# with open('final_test_in.p', 'wb') as f:
+#     pickle.dump((h_basis, v_basis, h_obs, v_obs), f)
 
-v_obs = bfpy.Observation()
-v_obs.load()
-
-h_basis = bfpy.basis.IsometricEmitter(pol_angle=90, n2=1.7, n3=1.5)
-v_basis = bfpy.basis.IsometricEmitter(pol_angle=0, n2=1.7, n3=1.5)
+with open('final_test_in.p', 'rb') as f:
+    h_basis, v_basis, h_obs, v_obs = pickle.load(f)
 
 # ========= TEST CODE HERE =========
-model = bfpy.model.Quadratic()
+model = bfpy.model.Quadratic(alpha=0.025)
 model.run([h_basis, v_basis], [h_obs, v_obs])
 # ==================================
 

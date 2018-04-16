@@ -7,10 +7,11 @@ from numba import jit
 
 class Quadratic(Model):
 
-    def __init__(self):
+    def __init__(self, alpha):
         super().__init__()
         self.cache = None
         self.name = "QUADRATIC"
+        self.alpha = alpha
 
     def run(self, bases, observation, verbose=True, caching=False):
         super().run(bases, observation)
@@ -26,15 +27,23 @@ class Quadratic(Model):
 
         o = sp.csc_matrix((np.ones(basis_rows, ), (np.arange(basis_rows), np.zeros(basis_rows, ))))
         A = sp.hstack((A, o))
+
+        D = np.diag(np.ones((A.shape[1] - 1,)), k=1) - np.diag(np.ones((A.shape[1],)))
+        D = D[:-1, :]
+        alpha = self.alpha
+        A = sp.vstack((A, alpha * D))
         H = cvx.Constant(A)
 
         b = np.vstack([self.data_set(angle).observation.data.reshape((180 * 1024, 1), order='F') for angle in
                        self.polarization_angles])
+
+        zz = np.zeros((A.shape[1] - 1, 1))
+        b = np.vstack((b,zz))
         b = cvx.Constant(b)
 
         x = cvx.Variable(n)
 
-        if self.cache is None:
+        if self.cache is None or not caching:
             print('    Multiplying ATA')
             P = np.array(ATA(A.todense()))
             if caching:
