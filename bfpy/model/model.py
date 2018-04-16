@@ -80,6 +80,7 @@ class Model(ABC):
         for b in bases:
             if not b.is_built:
                 b.build()
+        print('\n============ Starting the kemitter ' + self.name + ' solver ============')
 
     def build_bases(self):
         for angle in self.polarization_angles:

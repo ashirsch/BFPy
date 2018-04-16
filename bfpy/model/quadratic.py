@@ -3,21 +3,21 @@ import scipy.sparse as sp
 import cvxpy as cvx
 import time
 from .model import Model
+from numba import jit
 
+class Quadratic(Model):
 
-class Ridge(Model):
-
-    def __init__(self, alpha):
+    def __init__(self):
         super().__init__()
-        self.alpha = alpha
-        self.name = "RIDGE"
+        self.cache = None
+        self.name = "QUADRATIC"
 
-    def run(self, bases, observation, verbose=True):
+    def run(self, bases, observation, verbose=True, caching=False):
         super().run(bases, observation)
 
         print('Bases and observations loaded in model')
         t0 = time.time()
-        print('Forming Regularized problem:')
+        print('Forming QP problem:')
         print('    Setting up basis and observation matrices')
         A = sp.vstack([self.data_set(angle).basis.basis_matrix for angle in self.polarization_angles])
 
@@ -34,15 +34,18 @@ class Ridge(Model):
 
         x = cvx.Variable(n)
 
-        print('    Defining regularization term with alpha = {0}'.format(self.alpha))
-        D = np.diag(np.ones((A.shape[1] - 1,)), k=1) - np.diag(np.ones((A.shape[1],)))
-        D = cvx.Constant(D[:-1, :])
-        alpha = self.alpha
-
+        if self.cache is None:
+            print('    Multiplying ATA')
+            P = np.array(ATA(A.todense()))
+            if caching:
+                self.cache = P
+        else:
+            print('    Pulling ATA from cache')
+            P = self.cache
         print('    Defining objective')
-        objective = cvx.Minimize(cvx.norm2(H * x - b) + alpha * cvx.norm2(D * x))
+        objective = cvx.Minimize(cvx.quad_form(x, P) - 2*((H.T*b).T)*x + b.T*b)
         print('    Defining constraints')
-        constraints = [x[:-1] >= 0]
+        constraints = [x >= 0]
         print('    Defining problem')
         prob = cvx.Problem(objective, constraints)
         print('Problem Formulation DONE\n\nCalling the solver: ' + cvx.MOSEK)
@@ -57,3 +60,8 @@ class Ridge(Model):
             self._process_result(self.solver_result[:-1])
             t1 = time.time()
             print('Fitting DONE:\n    Elapsed time: {0:.2f} s'.format(t1-t0))
+
+
+@jit(nopython=True, parallel=True)
+def ATA(A):
+    return A.transpose() @ A
