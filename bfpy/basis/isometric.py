@@ -1,3 +1,5 @@
+import sys
+import time
 import numpy as np
 from numba import vectorize
 import scipy.sparse as sp
@@ -45,9 +47,17 @@ class IsometricEmitter(Basis):
         if not self.is_defined:
             raise RuntimeError("Basis is not well-defined. Ensure that all parameters are assigned properly.")
 
+        print('\n============ Starting the kemitter ' + self.basis_parameters.basis_type + ' builder ============')
+        print('Basis information:')
+        print('    polarization angle: {0:d}'.format(self.pol_angle))
+        print('    wavelengths:        {0:d}'.format(self.basis_parameters.orig_wavelength_count))
+        print('    k grid size:        {0:d}'.format(self.basis_parameters.ux_count))
+        t0 = time.time()
+        print('\nCalculating fields:')
         field_set = field.Field(self.basis_parameters)
         field_set.calculate_fields(self.dipoles)
         isometric_bases = []
+        sys.stdout.write('Forming sparse emission basis: ')
         if "ED" in self.dipoles:
             ed_isometric = isometric_emission(self.basis_parameters.pol_angle_rad,
                                               field_set.xpol.ED.x, field_set.ypol.ED.x,
@@ -76,6 +86,9 @@ class IsometricEmitter(Basis):
         # return the single sparse matrix
         self.basis_matrix = basis
         self.is_built = True
+        t1 = time.time()
+        sys.stdout.write('DONE\n')
+        print('Elapsed time: {0:.2f} s'.format(t1-t0))
 
 
 @vectorize("float64(float64,complex128,complex128,complex128,complex128,complex128,complex128)",

@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 from numba import vectorize, jit, prange
 from . import fresnel as frs
@@ -41,40 +42,57 @@ class Field(object):
 
     def calculate_fields(self, dipoles):
         # calculate normalized wavenumbers
+        OFFSET = '    '
+        sys.stdout.write(OFFSET + 'Fresnel Coefficients: ')
+        sys.stdout.flush()
         self._calculate_wavenumbers()
         Tsxy, Tsz, Tpxy, Tpz = self._calculate_transmission_coeffs()
+        sys.stdout.write('DONE\n')
+        sys.stdout.flush()
         if "ED" in dipoles:
+            sys.stdout.write(OFFSET + 'Electric Dipole: .')
+            sys.stdout.flush()
             self.ypol.ED = Field.PolFieldSet.PolDipoleField("ED")
             self.xpol.ED = Field.PolFieldSet.PolDipoleField("ED")
 
             self.ypol.ED.x = dip._ypol_edx(self.u.x, self.u.y, self.u.z2s, self.u.z3,
                                            Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
+            self.xpol.ED.x = np.transpose(self.ypol.ED.x, (1, 0, 2))
+            sys.stdout.write('.')
+            sys.stdout.flush()
             self.ypol.ED.y = dip._ypol_edy(self.u.x, self.u.y, self.u.z2s, self.u.z3,
                                            Tpxy, Tsz, self.__bp.n2o, self.__bp.n3)
+            self.xpol.ED.y = np.transpose(self.ypol.ED.y, (1, 0, 2))
+            sys.stdout.write('.')
+            sys.stdout.flush()
             self.ypol.ED.z = dip._ypol_edz(self.u.x, self.u.y, self.u.z2s, self.u.z3,
                                            Tpz, self.__bp.n2o, self.__bp.n3)
-
-            # TODO: for closed slit case, will need special treatment for xpol; for now permutation will suffice
-            self.xpol.ED.x = np.transpose(self.ypol.ED.x, (1, 0 ,2))
-            self.xpol.ED.y = np.transpose(self.ypol.ED.y, (1, 0, 2))
             self.xpol.ED.z = np.transpose(self.ypol.ED.z, (1, 0, 2))
-            print("generated ED fields")
+            # TODO: for closed slit case, will need special treatment for xpol; for now permutation will suffice
+            sys.stdout.write('\b\b\b DONE\n')
+            sys.stdout.flush()
         if "MD" in dipoles:
+            sys.stdout.write(OFFSET + 'Magnetic Dipole: .')
+            sys.stdout.flush()
             self.ypol.MD = Field.PolFieldSet.PolDipoleField("MD")
             self.xpol.MD = Field.PolFieldSet.PolDipoleField("MD")
 
             self.ypol.MD.x = dip._ypol_mdx(self.u.x, self.u.y, self.u.z2p, self.u.z3,
                                        Tsxy, Tpz, self.__bp.n2o, self.__bp.n3)
+            self.xpol.MD.x = -np.transpose(self.ypol.MD.x, (1, 0, 2))
+            sys.stdout.write('.')
+            sys.stdout.flush()
             self.ypol.MD.y = dip._ypol_mdy(self.u.x, self.u.y, self.u.z2p, self.u.z3,
                                        Tsxy, Tpz, self.__bp.n2o, self.__bp.n3)
+            self.xpol.MD.y = -np.transpose(self.ypol.MD.y, (1, 0, 2))
+            sys.stdout.write('.')
+            sys.stdout.flush()
             self.ypol.MD.z = dip._ypol_mdz(self.u.x, self.u.y, self.u.z2s, self.u.z3,
                                        Tsz, self.__bp.n2o, self.__bp.n3)
-
-            # TODO: for closed slit case, will need special treatment for xpol; for now permutation will suffice
-            self.xpol.MD.x = -np.transpose(self.ypol.MD.x, (1, 0, 2))
-            self.xpol.MD.y = -np.transpose(self.ypol.MD.y, (1, 0, 2))
             self.xpol.MD.z = -np.transpose(self.ypol.MD.z, (1, 0, 2))
-            print("generated MD fields")
+            # TODO: for closed slit case, will need special treatment for xpol; for now permutation will suffice
+            sys.stdout.write('\b\b\b DONE\n')
+            sys.stdout.flush()
         # TODO: EQ expansion
         # apply angular limit mask
         self._apply_mask()
