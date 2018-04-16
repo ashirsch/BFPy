@@ -7,6 +7,7 @@ import scipy.sparse as sp
 class Basis(ABC):
     """Abstract base class for bases"""
     def __init__(self):
+        self.basis_names = None
         self.basis_matrix = None
         self.is_built = False
         self.basis_parameters = None
@@ -19,9 +20,9 @@ class Basis(ABC):
 
     def define_observation_parameters(self, wavelength, k_count, open_slit=True):
         if self.basis_parameters is not None:
-            self.basis_parameters.set_wavelength(wavelength)
             self.basis_parameters.uy_count = k_count
             self.basis_parameters.ux_count = k_count if open_slit else 1
+            self.basis_parameters.set_wavelength(wavelength)
         else:
             print("Geometric and optical parameters must be defined prior to loading of "
                   "observation-dependent parameters.")

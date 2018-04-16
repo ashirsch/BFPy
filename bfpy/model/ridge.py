@@ -38,9 +38,11 @@ class Ridge(Model):
         constraints = [x[:-1] >= 0]
         print('defining problem')
         prob = cvx.Problem(objective, constraints)
-        print('\nSolving...')
+        print('\nCalling the solver...')
         t0 = time.time()
         prob.solve(solver=cvx.MOSEK, verbose=verbose)
         t1 = time.time()
-        self.rates = x.value
+        self.solver_result = np.array(x.value)
+        self.background = self.solver_result[-1]
+        self._process_result(self.solver_result[:-1])
         print('Done in {0:.3f} seconds.'.format(t1 - t0))

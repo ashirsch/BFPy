@@ -30,6 +30,7 @@ class OrientedEmitter(Basis):
             return
         self.pol_angle = pol_angle
         self.dipoles = dipoles
+        self.basis_names = [orientation + dip for dip in self.dipoles for orientation in ('IP', 'OP')]
         self.basis_parameters = BasisParameters(basis_type="ORIENTED",
                                                 n0=n0, n1=n1, n2o=n2o, n2e=n2e, n3=n3,
                                                 ux_range=(-NA, NA), uy_range=(-NA, NA),
@@ -78,7 +79,8 @@ def in_plane_emission(pol_angle, xpol_x, ypol_x, xpol_y, ypol_y):
     return in_plane
 
 
-@vectorize("float64(float64,complex128,complex128)")
+@vectorize("float64(float64,complex128,complex128)",
+           target='parallel', nopython=True)
 def out_plane_emission(pol_angle, xpol_z, ypol_z):
     out_plane = np.square(np.abs(np.cos(pol_angle) * ypol_z +
                                  np.sin(pol_angle) * xpol_z))

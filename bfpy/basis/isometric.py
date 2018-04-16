@@ -30,6 +30,7 @@ class IsometricEmitter(Basis):
         super().__init__()
         self.pol_angle = pol_angle
         self.dipoles = dipoles
+        self.basis_names = list(self.dipoles)
         self.basis_parameters = BasisParameters(basis_type="ISOMETRIC",
                                                 n0=n0, n1=n1, n2o=n2, n2e=n2, n3=n3,
                                                 ux_range=(-NA, NA), uy_range=(-NA, NA),
