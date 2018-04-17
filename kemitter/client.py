@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import sys
 
-from bfpy.obsrv import observation
-from bfpy.basis import basis
+from kemitter.obsrv import observation
+from kemitter.basis import basis
 
 
 class BFPSession(object):

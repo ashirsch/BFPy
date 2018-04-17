@@ -1,4 +1,4 @@
-from bfpy.ui import LoaderUI
+from kemitter.ui import LoaderUI
 
 # noinspection PyPep8Naming
 class Observation(object):

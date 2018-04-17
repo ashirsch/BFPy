@@ -1,5 +1,5 @@
-import bfpy
-import bfpy.vis.visualization as bfpvis
+import kemitter
+import kemitter.vis.visualization as bfpvis
 import numpy as np
 import scipy.sparse as sp
 import cvxpy as cvx
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 # FIRST SUCCESSFUL FIT - Time 2 minutes - see pickled files for quick loading and result.
 # Ridge Regression implemented - Time ~ 3 minutes (longer setup time)
-sess = bfpy.BFPSession()
+sess = kemitter.BFPSession()
 
 sess.load(90)
 sess.load(0)
