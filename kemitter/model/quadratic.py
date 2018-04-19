@@ -1,9 +1,10 @@
 import numpy as np
 import scipy.sparse as sp
 import cvxpy as cvx
+from numba import jit
 import time
 from .model import Model
-from numba import jit
+
 
 class Quadratic(Model):
 
