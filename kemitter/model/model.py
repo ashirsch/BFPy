@@ -118,7 +118,7 @@ class Model(ABC):
         self.__pol_children = []
         for i in range(len(pol_angles)):
             self.__pol_children.append(PolDataSet(pol_angles[i], observations[i], bases[i]))
-            bases[i].define_observation_parameters(observations[i].wavelength, observations[i].angular_pixel_count)
+            bases[i].define_observation_parameters(observations[i].wavelength, observations[i].momentum_pixel_count)
 
     def _process_result(self, result_val):
         w_count = self.bases[0].basis_parameters.wavelength_count

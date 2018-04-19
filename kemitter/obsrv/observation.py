@@ -1,8 +1,20 @@
-from kemitter.ui import LoaderUI
+from ..ui import LoaderUI
 
-# noinspection PyPep8Naming
+
 class Observation(object):
+    """Class for storing energy-momentum spectroscopy measurement data.
 
+    Stores all necessary measurement information for fitting and processing.
+    Can be used to store any image and wavelength mapping that can be expressed as
+    a set of NumPy arrays.
+
+    Attributes:
+        data (ndarray): 2D array containing image data with `float` type.
+        wavelength (ndarray): 1D array containing wavelength mapping data with `float` type.
+        pol_angle (int or float): polarizer angle in degrees.
+        filepath (str or None): path to source file containing original data [optional].
+        loaded (bool): whether or not data has been loaded by a loading method. Initially set to False.
+    """
     def __init__(self):
         self.filepath = None
         self.data = None
@@ -12,35 +24,73 @@ class Observation(object):
 
     @property
     def n_frames(self):
+        """int: the number of frames comprising the observation
+
+        Raises:
+            AttributeError: if no data has been loaded
+
+        Warnings:
+            Multiple frames in one observation is currently unsupported.
+        """
         if self.data is not None:
             return self.data.shape[2]
         else:
-            return 0
+            raise AttributeError('No image data has been set.')
 
     @property
     def dispersed_pixel_count(self):
+        """int: the image size in the wavelength (x) dimension
+
+        Raises:
+            AttributeError: if no data has been loaded
+        """
         if self.data is not None:
             return self.data.shape[1]
         else:
-            return 0
+            raise AttributeError('No image data has been set.')
 
     @property
-    def angular_pixel_count(self):
+    def momentum_pixel_count(self):
+        """int: the image size in the momentum (y) dimension
+
+        Raises:
+             AttributeError: if no data has been loaded
+        """
         if self.data is not None:
             return self.data.shape[0]
         else:
-            return 0
+            raise AttributeError('No image data has been set.')
 
     # TODO: Allow for loading of multiple frames (and sum and average options)
     def load(self):
+        """
+        Launches an interactive loading session.
+
+        Returns (bool):
+            True if observation was successfully loaded, False otherwise.
+
+        Notes:
+            Opening an interactive loader is a blocking operation, i.e. code will
+            stop running until the loader is closed.
+        """
         loader = LoaderUI()
         if loader.success:
-            self.load_from_array(loader.selected_data, loader.spe_file.wavelength, loader.pol_angle, loader.spe_file.filepath)
+            self.load_from_array(loader.selected_data, loader.spe_file.wavelength,
+                                 loader.pol_angle, loader.spe_file.filepath)
         return self.loaded
 
-    def load_from_array(self, numpy_data, wavelength, pol_angle, filepath=None):
-        # analyzes numpy_data and puts into proper place
-        self.data = numpy_data
+    def load_from_array(self, data, wavelength, pol_angle, filepath=None):
+        """
+        Loads all required observation data into required fields from a generic NumPy array.
+        Sets the `loaded` attribute to `True` upon success.
+
+        Args:
+            data (ndarray): 2D array containing image data with `float` type
+            wavelength (ndarray): 1D array containing wavelength mapping data with `float` type
+            pol_angle (int or float): polarizer angle in degrees
+            filepath (str or None): path to source file containing original data [optional]
+        """
+        self.data = data
         self.wavelength = wavelength
         self.pol_angle = pol_angle
         if filepath is not None:
