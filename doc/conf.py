@@ -42,7 +42,7 @@ release = '1.0.0'
 extensions = [
     'sphinx.ext.autodoc', 'sphinxcontrib.napoleon'
 ]
-autodoc_member_order = 'groupwise'
+autodoc_member_order = 'bysource'
 napoleon_use_admonition_for_notes = True
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

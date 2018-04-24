@@ -1,24 +1,64 @@
-import time
 from abc import ABC, abstractmethod
 import numpy as np
 import scipy.sparse as sp
 
 
 class Basis(ABC):
-    """Abstract base class for bases"""
+    """Abstract base class for all basis types.
+
+    This class defines the common interface used for defining sample geometries and building emission bases.
+    Individual basis classes differ in how they implement their ``build()`` method, but users interface with them with
+    the methods and attributes defined here.
+
+    Notes:
+        ``Basis`` should not be instantiated on its own. Only its children, which implement a ``build()`` method
+        should be used directly.
+
+    Attributes:
+        basis_names (list of str): denotes the types and column-wise order of bases present in the built basis matrix.
+        basis_matrix (csc_matrix): sparse matrix containing basis functions. Each column corresponds to a basis function
+            of a particular basis type at a particular wavelength.
+        is_built (bool): whether or not a basis matrix has been successfully built
+        pol_angle (int or float): the polarization angle of the basis, in degrees.
+        basis_parameters (BasisParameters): the parameter object containing information about sample geometry, optical
+            properties, and observation-dependent information. Used by submodules for constructing emission bases.
+
+    Warnings:
+        Directly modifying the ``basis_parameters`` object after it's construciton is dangerous and should be
+        considered deprecated. Use the child class's initializer and ``define_observation_parameters()`` methods
+        instead to alter basis parameters.
+    """
     def __init__(self):
         self.basis_names = None
         self.basis_matrix = None
         self.is_built = False
-        self.basis_parameters = None
         self.pol_angle = None
+        self.basis_parameters = None
         super().__init__()
+
+    @property
+    def is_defined(self):
+        """bool: whether or not all basis parameters have been properly defined and the basis is ready to be built."""
+        defined = True
+        defined = defined and self.basis_parameters._verify_state()
+        defined = defined and self.pol_angle is not None
+        return defined
 
     @abstractmethod
     def build(self):
+        """Abstract method for basis building. Implemented by each basis individually"""
         pass
 
     def define_observation_parameters(self, wavelength, k_count, open_slit=True):
+        """Allows setting of basis parameters that depend on intended observation fitting.
+
+        Args:
+            wavelength (ndarray): 1D array of wavelength mapping values.
+            k_count (int): the image size in the momentum dimension. In open slit case, denotes the resolution of
+                the momentum-space basis functions by referring to the grid edge size. That is, each basis function
+                will be calculated on a ``k_count X k_count`` sized grid.
+            open_slit (bool): whether observation and corresponding basis should be of wide-angle type (ux_count > 1).
+        """
         if self.basis_parameters is not None:
             self.basis_parameters.uy_count = k_count
             self.basis_parameters.ux_count = k_count if open_slit else 1
@@ -26,13 +66,6 @@ class Basis(ABC):
         else:
             print("Geometric and optical parameters must be defined prior to loading of "
                   "observation-dependent parameters.")
-
-    @property
-    def is_defined(self):
-        defined = True
-        defined = defined and self.basis_parameters._verify_state()
-        defined = defined and self.pol_angle is not None
-        return defined
 
     def sparse_column_major_offset(self, matrix):
         # flatten data matrix by column
@@ -65,26 +98,42 @@ class Basis(ABC):
         return np.repeat(single_wavelength_cols, self.basis_parameters.ux_count * self.basis_parameters.uy_count).astype(int)
 
 
-class BasisParameters:
-    """
-    :type basis_type: str
-    :type n0: float
-    :type n1: float
-    :type n2o: float
-    :type n2e: float
-    :type n3: float
-    :type ux_range: tuple
-    :type uy_range: tuple
-    :type d: float
-    :type s: float
-    :type l: float
-    :type pol_angle: float
-    :type ux_count: int
-    :type uy_count: int
-    :type wavelength: numpy.ndarray
-    :type wavelength_count: int
-    :type pad_w: bool
-    :type trim_w: bool
+class BasisParameters(object):
+    """Parameter object for basis class
+
+    Stores all necessary information about sample geometry, optical properties, and observation-dependent
+    conditions such as measurement wavelength and numerical aperture for basis construction. Also holds flags
+    for basis building procedures based on user preferences.
+
+    Attributes:
+        basis_type (str): the type of basis to be built with the object
+        n0 (float): refractive index of the 0 layer (typically vacuum, 1.0)
+        n1 (float): refractive index of the 1 layer
+        n2o (float): in-plane refractive index of the emitter layer
+        n2e (float): out-of-plane refractive index of the emitter layer
+        n3 (float): refractive index of the substrate layer (typically quartz, 1.5)
+        ux_range (tuple of float): the minimum and maximum normalized wavenumbers in the x direction
+            e.g. (-NA, NA) for open slit
+        uy_range (tuple of float): the minimum and maximum normalized wavenumbers in the y direction
+            e.g. (-NA, NA) for open slit
+        d (float): distance from emitter center to 2-3 layer interface, in nanometers
+        s (float): distance from emitter center to 1-2 layer interface, in nanometers
+        l (float): thickness of n1 layer
+        pol_angle_rad (float): the polarization angle, given in degrees (stored in radians)
+        ux_count (int): the number of samples in the x-momentum dimension
+        uy_count (int): the number of samples in the y-momentum dimension
+        wavelength (ndarray):  1D array of wavelength mapping values (with or without padding)
+        wavelength_count (int): the number of wavelength values to be calculated (with or without padding)
+        pad_w (bool): construct basis by padding wavelength values near edges of image (False by default)
+        trim_w (bool): trim the basis matrix to the desired image dimensions by wavelength (True by default)
+        orig_wavelength (ndarry): 1D array of wavelength mapping values (without padding)
+        orig_wavelength_length (int): the number of wavelength values in the observation image (without padding)
+
+    Warnings:
+        Polarization angle is entered in the initializer in degrees, like other areas of the public interface,
+        but is then converted to radians for basis calculations. Functions that use basis parameters should refer to
+        the ``pol_angle_rad`` attribute when making any calculation with polarization angle, NOT the degree value stored
+        in the basis object itself.
     """
 
     def __init__(self, basis_type,
@@ -97,6 +146,7 @@ class BasisParameters:
                  wavelength_count=None,
                  pad_w=False,
                  trim_w=True):
+        """Initializer for basis parameter class"""
         self.basis_type = basis_type
         self.n0         = n0
         self.n1         = n1
@@ -119,6 +169,11 @@ class BasisParameters:
         self.orig_wavelength_count = wavelength_count
 
     def set_wavelength(self, wavelength):
+        """Setter for the wavelength mapping values
+
+        Args:
+            wavelength (ndarray):  1D array of wavelength mapping values. May be padded upon setting.
+        """
         self.wavelength = wavelength
         self.wavelength_count = len(wavelength)
         self.orig_wavelength = wavelength
