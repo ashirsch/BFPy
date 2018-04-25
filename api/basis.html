@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Bases &#8212; kemitter 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="../_static/icon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Isometric Basis" href="isometric.html" />
+    <link rel="prev" title="Quadratic" href="quadratic.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          kemitter</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../introduction.html">Introduction</a></li>
+                <li><a href="index.html">API</a></li>
+                <li><a href="https://github.com/ashirsch/kemitter">Repository</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="bases">
+<h1>Bases<a class="headerlink" href="#bases" title="Permalink to this headline">¶</a></h1>
+<p>This page describes the general interface for and parameters involved in building and managing <code class="docutils literal notranslate"><span class="pre">kemitter</span></code> emission
+bases. For specific implementations and their initializers, refer to the following links.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="isometric.html">Isometric Basis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oriented.html">Oriented Basis</a></li>
+</ul>
+</div>
+<div class="section" id="basis-interface">
+<h2>Basis (interface)<a class="headerlink" href="#basis-interface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kemitter.basis.basis.Basis">
+<em class="property">class </em><code class="descclassname">kemitter.basis.basis.</code><code class="descname">Basis</code><a class="headerlink" href="#kemitter.basis.basis.Basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for all basis types.</p>
+<p>This class defines the common interface used for defining sample geometries and building emission bases.
+Individual basis classes differ in how they implement their <code class="docutils literal notranslate"><span class="pre">build()</span></code> method, but users interface with them with
+the methods and attributes defined here.</p>
+<div class="admonition-notes admonition">
+<p class="first admonition-title">Notes</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">Basis</span></code> should not be instantiated on its own. Only its children, which implement a <code class="docutils literal notranslate"><span class="pre">build()</span></code> method
+should be used directly.</p>
+</div>
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.basis_names">
+<code class="descname">basis_names</code><a class="headerlink" href="#kemitter.basis.basis.Basis.basis_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of str</em> – denotes the types and column-wise order of bases present in the built basis matrix.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.basis_matrix">
+<code class="descname">basis_matrix</code><a class="headerlink" href="#kemitter.basis.basis.Basis.basis_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>csc_matrix</em> – sparse matrix containing basis functions. Each column corresponds to a basis function
+of a particular basis type at a particular wavelength.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.is_built">
+<code class="descname">is_built</code><a class="headerlink" href="#kemitter.basis.basis.Basis.is_built" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – whether or not a basis matrix has been successfully built</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.pol_angle">
+<code class="descname">pol_angle</code><a class="headerlink" href="#kemitter.basis.basis.Basis.pol_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int or float</em> – the polarization angle of the basis, in degrees.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.basis_parameters">
+<code class="descname">basis_parameters</code><a class="headerlink" href="#kemitter.basis.basis.Basis.basis_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>BasisParameters</em> – the parameter object containing information about sample geometry, optical
+properties, and observation-dependent information. Used by submodules for constructing emission bases.</p>
+</dd></dl>
+
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Directly modifying the <code class="docutils literal notranslate"><span class="pre">basis_parameters</span></code> object after it’s construciton is dangerous and should be
+considered deprecated. Use the child class’s initializer and <code class="docutils literal notranslate"><span class="pre">define_observation_parameters()</span></code> methods
+instead to alter basis parameters.</p>
+</div>
+<dl class="attribute">
+<dt id="kemitter.basis.basis.Basis.is_defined">
+<code class="descname">is_defined</code><a class="headerlink" href="#kemitter.basis.basis.Basis.is_defined" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – whether or not all basis parameters have been properly defined and the basis is ready to be built.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.basis.basis.Basis.build">
+<code class="descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.basis.basis.Basis.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for basis building. Implemented by each basis individually</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.basis.basis.Basis.define_observation_parameters">
+<code class="descname">define_observation_parameters</code><span class="sig-paren">(</span><em>wavelength</em>, <em>k_count</em>, <em>open_slit=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.basis.basis.Basis.define_observation_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Allows setting of basis parameters that depend on intended observation fitting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>wavelength</strong> (<em>ndarray</em>) – 1D array of wavelength mapping values.</li>
+<li><strong>k_count</strong> (<em>int</em>) – the image size in the momentum dimension. In open slit case, denotes the resolution of
+the momentum-space basis functions by referring to the grid edge size. That is, each basis function
+will be calculated on a <code class="docutils literal notranslate"><span class="pre">k_count</span> <span class="pre">X</span> <span class="pre">k_count</span></code> sized grid.</li>
+<li><strong>open_slit</strong> (<em>bool</em>) – whether observation and corresponding basis should be of wide-angle type (ux_count &gt; 1).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="basis-parameters">
+<h2>Basis Parameters<a class="headerlink" href="#basis-parameters" title="Permalink to this headline">¶</a></h2>
+<p>While basis parameters should normally be defined in the initializer of each basis class, advanced users
+may want to save and set basis parameters directly in their storage format: the <code class="docutils literal notranslate"><span class="pre">BasisParameters</span></code> class. This can
+be efficient for repeated calculations. While the parameter object has checks to verify its internal state,
+basis-specific checks are only handled in the initializers of the individual basis classes. Therefore care should be
+when creating a custom parameter class, as doing so may bypass these basis-specific helper functions and verification
+steps.</p>
+<dl class="class">
+<dt id="kemitter.basis.basis.BasisParameters">
+<em class="property">class </em><code class="descclassname">kemitter.basis.basis.</code><code class="descname">BasisParameters</code><span class="sig-paren">(</span><em>basis_type</em>, <em>n0</em>, <em>n1</em>, <em>n2o</em>, <em>n2e</em>, <em>n3</em>, <em>ux_range</em>, <em>uy_range</em>, <em>d</em>, <em>s</em>, <em>l</em>, <em>pol_angle</em>, <em>ux_count=None</em>, <em>uy_count=None</em>, <em>wavelength=None</em>, <em>wavelength_count=None</em>, <em>pad_w=False</em>, <em>trim_w=True</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.basis.basis.BasisParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parameter object for basis class</p>
+<p>Stores all necessary information about sample geometry, optical properties, and observation-dependent
+conditions such as measurement wavelength and numerical aperture for basis construction. Also holds flags
+for basis building procedures based on user preferences.</p>
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.basis_type">
+<code class="descname">basis_type</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.basis_type" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>str</em> – the type of basis to be built with the object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.n0">
+<code class="descname">n0</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.n0" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – refractive index of the 0 layer (typically vacuum, 1.0)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.n1">
+<code class="descname">n1</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.n1" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – refractive index of the 1 layer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.n2o">
+<code class="descname">n2o</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.n2o" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – in-plane refractive index of the emitter layer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.n2e">
+<code class="descname">n2e</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.n2e" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – out-of-plane refractive index of the emitter layer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.n3">
+<code class="descname">n3</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.n3" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – refractive index of the substrate layer (typically quartz, 1.5)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.ux_range">
+<code class="descname">ux_range</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.ux_range" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of float</em> – the minimum and maximum normalized wavenumbers in the x direction
+e.g. (-NA, NA) for open slit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.uy_range">
+<code class="descname">uy_range</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.uy_range" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>tuple of float</em> – the minimum and maximum normalized wavenumbers in the y direction
+e.g. (-NA, NA) for open slit</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.d">
+<code class="descname">d</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.d" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – distance from emitter center to 2-3 layer interface, in nanometers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.s">
+<code class="descname">s</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.s" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – distance from emitter center to 1-2 layer interface, in nanometers</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.l">
+<code class="descname">l</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.l" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – thickness of n1 layer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.pol_angle_rad">
+<code class="descname">pol_angle_rad</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.pol_angle_rad" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – the polarization angle, given in degrees (stored in radians)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.ux_count">
+<code class="descname">ux_count</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.ux_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – the number of samples in the x-momentum dimension</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.uy_count">
+<code class="descname">uy_count</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.uy_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – the number of samples in the y-momentum dimension</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.wavelength">
+<code class="descname">wavelength</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> – 1D array of wavelength mapping values (with or without padding)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.wavelength_count">
+<code class="descname">wavelength_count</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.wavelength_count" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – the number of wavelength values to be calculated (with or without padding)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.pad_w">
+<code class="descname">pad_w</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.pad_w" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – construct basis by padding wavelength values near edges of image (False by default)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.trim_w">
+<code class="descname">trim_w</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.trim_w" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – trim the basis matrix to the desired image dimensions by wavelength (True by default)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.orig_wavelength">
+<code class="descname">orig_wavelength</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.orig_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarry</em> – 1D array of wavelength mapping values (without padding)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.basis.basis.BasisParameters.orig_wavelength_length">
+<code class="descname">orig_wavelength_length</code><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.orig_wavelength_length" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – the number of wavelength values in the observation image (without padding)</p>
+</dd></dl>
+
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Polarization angle is entered in the initializer in degrees, like other areas of the public interface,
+but is then converted to radians for basis calculations. Functions that use basis parameters should refer to
+the <code class="docutils literal notranslate"><span class="pre">pol_angle_rad</span></code> attribute when making any calculation with polarization angle, NOT the degree value stored
+in the basis object itself.</p>
+</div>
+<dl class="method">
+<dt id="kemitter.basis.basis.BasisParameters.set_wavelength">
+<code class="descname">set_wavelength</code><span class="sig-paren">(</span><em>wavelength</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.basis.basis.BasisParameters.set_wavelength" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setter for the wavelength mapping values</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>wavelength</strong> (<em>ndarray</em>) – 1D array of wavelength mapping values. May be padded upon setting.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/api/basis.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Alex Hirsch.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

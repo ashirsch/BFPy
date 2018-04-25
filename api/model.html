@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Models &#8212; kemitter 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="shortcut icon" href="../_static/icon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ridge" href="ridge.html" />
+    <link rel="prev" title="Observations" href="observations.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          kemitter</a>
+        <span class="navbar-text navbar-version pull-left"><b>1.0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../introduction.html">Introduction</a></li>
+                <li><a href="index.html">API</a></li>
+                <li><a href="https://github.com/ashirsch/kemitter">Repository</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">API Reference</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="models">
+<h1>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ridge.html">Ridge</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quadratic.html">Quadratic</a></li>
+</ul>
+</div>
+<div class="section" id="model-interface">
+<h2>Model (interface)<a class="headerlink" href="#model-interface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kemitter.model.model.Model">
+<em class="property">class </em><code class="descclassname">kemitter.model.model.</code><code class="descname">Model</code><a class="headerlink" href="#kemitter.model.model.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract base class for all solver models.</p>
+<p>This class defines the common interface used by each individual model. Individual model classes
+differ in how they implement their <code class="docutils literal notranslate"><span class="pre">run()</span></code> method, but users interface with them using the methods
+and attributes defined here.</p>
+<div class="admonition-notes admonition">
+<p class="first admonition-title">Notes</p>
+<p class="last"><code class="docutils literal notranslate"><span class="pre">Model</span></code> should not be instantiated on its own. Only its children, which implement a <code class="docutils literal notranslate"><span class="pre">run()</span></code> method
+should be used directly.</p>
+</div>
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.solver_result">
+<code class="descname">solver_result</code><a class="headerlink" href="#kemitter.model.model.Model.solver_result" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> – 1D array containing the solved variable values returned by the solver in its raw form.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.background">
+<code class="descname">background</code><a class="headerlink" href="#kemitter.model.model.Model.background" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>float</em> – the solved constant background term.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.rates">
+<code class="descname">rates</code><a class="headerlink" href="#kemitter.model.model.Model.rates" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – contains 1D arrays with the solved wavelength-dependent emission rates for each basis type.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.total_emission">
+<code class="descname">total_emission</code><a class="headerlink" href="#kemitter.model.model.Model.total_emission" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> – 1D array containing the solved total emission rates, i.e. the sum of each
+value in <code class="docutils literal notranslate"><span class="pre">Model.rates</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.percent_emission">
+<code class="descname">percent_emission</code><a class="headerlink" href="#kemitter.model.model.Model.percent_emission" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – contains 1D arrays corresponding to the percent contribution of each basis type to
+the total emission at each wavelength.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.counts">
+<code class="descname">counts</code><a class="headerlink" href="#kemitter.model.model.Model.counts" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>dict</em> – contains 1D arrays representing the solved wavelength-dependent total counts for each basis type.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.basis_names">
+<code class="descname">basis_names</code><a class="headerlink" href="#kemitter.model.model.Model.basis_names" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of str</em> – names of the basis types, denoting the keys to access specific rates, counts,
+and percent_emission vectors.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.is_empty">
+<code class="descname">is_empty</code><a class="headerlink" href="#kemitter.model.model.Model.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>bool</em> – Whether or not the model contains any polarized data to process.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.polarization_angles">
+<code class="descname">polarization_angles</code><a class="headerlink" href="#kemitter.model.model.Model.polarization_angles" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of int or float</em> – the various polarization angles contained in the model data sets.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.bases">
+<code class="descname">bases</code><a class="headerlink" href="#kemitter.model.model.Model.bases" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of Basis</em> – the various bases contained in the model data sets in their full object format.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.observations">
+<code class="descname">observations</code><a class="headerlink" href="#kemitter.model.model.Model.observations" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of Observation</em> – the various observations contained in the model data sets in their full object format.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.basis_matrices">
+<code class="descname">basis_matrices</code><a class="headerlink" href="#kemitter.model.model.Model.basis_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>list of csc_matrix</em> – list of the sparse basis matrices stored in the <code class="docutils literal notranslate"><span class="pre">Basis</span></code> objects of
+the model data sets.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.Model.n_polarizations">
+<code class="descname">n_polarizations</code><a class="headerlink" href="#kemitter.model.model.Model.n_polarizations" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int</em> – the number of polarized data sets contained in the model.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.model.model.Model.data_set">
+<code class="descname">data_set</code><span class="sig-paren">(</span><em>pol_angle</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.model.model.Model.data_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter function for a particular polarized data set.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pol_angle</strong> (<em>int</em><em> or </em><em>float</em>) – the polarization angle of the desired polarized data set, in degrees.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Returns (PolDataSet):</dt>
+<dd>The polarized data set object, containing references to the corresponding observations and
+bases, and if solved the polarized image fits and counts.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.model.model.Model.remove_data_set">
+<code class="descname">remove_data_set</code><span class="sig-paren">(</span><em>pol_angle</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.model.model.Model.remove_data_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a polarized data set form the model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pol_angle</strong> (<em>int</em><em> or </em><em>float</em>) – the polarization angle of the polarized data set to remove, in degrees.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.model.model.Model.reset">
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.model.model.Model.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears all polarized data sets from the model, after confirmation.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This operation will clear any built bases or solver results contained in the model.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="kemitter.model.model.Model.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>bases</em>, <em>observations</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.model.model.Model.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract method for all child <code class="docutils literal notranslate"><span class="pre">run()</span></code> methods</p>
+<p>This method is called by each individual solver routine to handle data pre-processing and basis building.</p>
+<p>Processing proceeds by first loading bases and observations into proper polarized data sets. In this step,
+arguments are checked to ensure polarization angles match in value and order. Any bases that have not been
+built already are built with their corresponding <code class="docutils literal notranslate"><span class="pre">build()</span></code> method. Then processing is returned
+to the individual <code class="docutils literal notranslate"><span class="pre">run()</span></code> implementation of the calling solver.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bases</strong> (<em>list of Basis</em>) – The basis objects (built or not), to be used for fitting.</li>
+<li><strong>observations</strong> (<em>list of Observations</em>) – The observation objects to be used for fitting.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="polarized-data-set-storage">
+<h2>Polarized Data Set (storage)<a class="headerlink" href="#polarized-data-set-storage" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="kemitter.model.model.PolDataSet">
+<em class="property">class </em><code class="descclassname">kemitter.model.model.</code><code class="descname">PolDataSet</code><span class="sig-paren">(</span><em>pol_angle</em>, <em>obs</em>, <em>basis</em><span class="sig-paren">)</span><a class="headerlink" href="#kemitter.model.model.PolDataSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility class for storing and organizing polarized data (bases, observation, fits).</p>
+<p>Used to keep data of the same polarization angle packaged together for batch processing and access.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Polarized data sets should only be accessed and modified through the parent model’s <code class="docutils literal notranslate"><span class="pre">data_set()</span></code> method.</p>
+</div>
+<dl class="attribute">
+<dt id="kemitter.model.model.PolDataSet.pol_angle">
+<code class="descname">pol_angle</code><a class="headerlink" href="#kemitter.model.model.PolDataSet.pol_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>int or float</em> – the polarization angle shared by all of the various data set components.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.PolDataSet.observation">
+<code class="descname">observation</code><a class="headerlink" href="#kemitter.model.model.PolDataSet.observation" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Observation</em> – the experimental observation object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.PolDataSet.basis">
+<code class="descname">basis</code><a class="headerlink" href="#kemitter.model.model.PolDataSet.basis" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Basis</em> – the theoretically basis object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.PolDataSet.fit">
+<code class="descname">fit</code><a class="headerlink" href="#kemitter.model.model.PolDataSet.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> – reconstructed fit to observation data once solved by the model solver</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="kemitter.model.model.PolDataSet.counts">
+<code class="descname">counts</code><a class="headerlink" href="#kemitter.model.model.PolDataSet.counts" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>ndarray</em> – the wavelength-dependent counts at this particular polarization angle, across all basis types.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../_sources/api/model.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, Alex Hirsch.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
