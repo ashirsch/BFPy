@@ -6,13 +6,36 @@ from .model import Model
 
 
 class Ridge(Model):
+    """Solves and stores results of cvxpy ridge regression solver, implemented by the ``cvxpy.norm2()`` function.
 
+    Attributes:
+        name (str): "RIDGE" (constant)
+        alpha (float): the regularization parameter for the smoothness penalty
+
+    See Also:
+        :class:`~kemitter.model.model.Model`
+    """
     def __init__(self, alpha):
         super().__init__()
         self.alpha = alpha
         self.name = "RIDGE"
 
     def run(self, bases, observation, verbose=True):
+        """Runs the model calculations.
+
+        Bases and observations are loaded into proper polarized data sets. In this step,
+        arguments are checked to ensure polarization angles match in value and order. Any bases that have not been
+        built already are built with their corresponding ``build()`` method.
+
+        Bases and observations of multiple polarizations are then concatenated and given to cvxpy and MOSEK for solving.
+
+        Results are returned and processed in inherited ``Model`` attributes.
+
+        Args:
+            bases (list of Basis): The basis objects (built or not) of several polarizations, to be used for fitting.
+            observation (list of Observation): The observation objects of several polarizations, to be used for fitting.
+            verbose (bool): The console verbosity of the called solver (MOSEK).
+        """
         super().run(bases, observation)
 
         print('Bases and observations loaded in model')

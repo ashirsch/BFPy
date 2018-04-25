@@ -2,6 +2,8 @@ Models
 ======
 
 .. toctree::
+   ridge
+   quadratic
 
 Model (interface)
 -----------------

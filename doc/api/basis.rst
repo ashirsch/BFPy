@@ -1,7 +1,12 @@
 Bases
 ======
 
+This page describes the general interface for and parameters involved in building and managing ``kemitter`` emission
+bases. For specific implementations and their initializers, refer to the following links.
+
 .. toctree::
+   isometric
+   oriented
 
 Basis (interface)
 -----------------

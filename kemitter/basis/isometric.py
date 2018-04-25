@@ -8,7 +8,30 @@ from .fields import field
 
 
 class IsometricEmitter(Basis):
+    """Basis builder for an isometric emitter. Default keyword arguments are given in [brackets].
 
+    Keyword Args:
+        dipoles (tuple of str): The multi-pole codes for the desired basis [``('ED, 'MD')``]
+        n0 (float): refractive index of the 0 layer (typically vacuum, 1.0) [1.0]
+        n1 (float): refractive index of the 1 layer [1.0]
+        n2 (float): refractive index of the emitter layer [1.0]
+        n3 (float): refractive index of the substrate layer (typically quartz, 1.5) [1.0]
+        d (float): distance from emitter center to 2-3 layer interface, in nanometers [10.0]
+        s (float): distance from emitter center to 1-2 layer interface, in nanometers [10.0]
+        l (float): thickness of n1 layer, in nanometers [0.0]
+        NA (float): the maximum numerical aperture (normalized angular extent) of the basis functions [1.3]
+        pad_w (bool): construct basis by padding wavelength values near edges of image [False]
+        trim_w (bool): trim the basis matrix to the desired image dimensions by wavelength [True]
+        wavelength (ndarray): 1D array of wavelength mapping values [None]
+        k_count (int): the image size in the momentum dimension. In open slit case, denotes the resolution of
+            the momentum-space basis functions by referring to the grid edge size. That is, each basis function
+            will be calculated on a ``k_count X k_count`` sized grid [None]
+        open_slit (bool): whether observation and corresponding basis should be of wide-angle type (ux_count > 1) [True]
+
+    See Also:
+        :class:`~kemitter.basis.basis.Basis`
+        :func:`~kemitter.basis.basis.Basis.define_observation_parameters`
+    """
     def __init__(self, pol_angle,
                  dipoles=('ED', 'MD'),
                  n0=1.0, n1=1.0, n2=1.0, n3=1.0,
@@ -44,6 +67,12 @@ class IsometricEmitter(Basis):
             self.define_observation_parameters(wavelength, k_count, open_slit)
 
     def build(self):
+        """Builds the isometric basis
+
+        Makes calls to field and fresnel submodules to calculate electric and magnetic fields.
+
+        Element-wise operations make use of `numba` to parallelize and optimize calculations.
+        """
         if not self.is_defined:
             raise RuntimeError("Basis is not well-defined. Ensure that all parameters are assigned properly.")
 

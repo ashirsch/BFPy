@@ -48,3 +48,8 @@ Experimental method:
 Authors and Acknowledgements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ``kemitter`` is developed and maintained by the `Zia Lab <http://www.zia-lab.com/>`_ at Brown University.
+
+License
+^^^^^^^
+``kemitter`` is available for research, personal, or propietary use under the terms of
+`GNU LGPL Version 3 <https://www.gnu.org/licenses/lgpl-3.0-standalone.html>`_.

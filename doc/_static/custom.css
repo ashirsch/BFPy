@@ -39,3 +39,7 @@ dl.class {
 dl.docutils {
     margin-left: 15px;
 }
+
+code.xref, a code {
+    color: white;
+}

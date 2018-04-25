@@ -14,6 +14,9 @@ kemitter
 An analysis package for wide-angle energy-momentum spectroscopy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+This website is currently under construction, but you may browse what is currently available here.
+Repository, installation links, and examples will be made publically available soon.
+
 .. toctree::
    :maxdepth: 1
 

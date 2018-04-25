@@ -7,7 +7,16 @@ from .model import Model
 
 
 class Quadratic(Model):
+    """Solves and stores results of cvxpy ridge regression solver, posed in its quadratic form.
 
+        Attributes:
+            name (str): "QUADRATIC" (constant)
+            alpha (float): the regularization parameter for the smoothness penalty
+            cache (ndarray): A cached 2D (A^T*A) array from a previous calculation (used for repeated fits).
+
+        See Also:
+            :class:`~kemitter.model.model.Model`
+        """
     def __init__(self, alpha):
         super().__init__()
         self.cache = None
@@ -15,6 +24,27 @@ class Quadratic(Model):
         self.alpha = alpha
 
     def run(self, bases, observation, verbose=True, caching=False):
+        """Runs the model calculations.
+
+        Bases and observations are loaded into proper polarized data sets. In this step,
+        arguments are checked to ensure polarization angles match in value and order. Any bases that have not been
+        built already are built with their corresponding ``build()`` method.
+
+        Bases and observations of multiple polarizations are then concatenated and given to cvxpy and MOSEK for solving.
+
+        The problem is first factorized into its quadratic form by performing the matrix multiplication (A^T*A).
+        This is an expensive operation that comes with the benefit of much faster solving times. For repeated fits
+        (for example, fits of multiple frames with the same bases), this resulting matrix can be cached to avoid
+        repetitive recalculations.
+
+        Results are returned and processed in inherited ``Model`` attributes.
+
+        Args:
+            bases (list of Basis): The basis objects (built or not) of several polarizations, to be used for fitting.
+            observation (list of Observation): The observation objects of several polarizations, to be used for fitting.
+            verbose (bool): The console verbosity of the called solver (MOSEK) [default True].
+            caching (bool): Whether or not to use or store the resulting basis-matrix multiplication [default False].
+        """
         super().run(bases, observation)
 
         print('Bases and observations loaded in model')
