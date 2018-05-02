@@ -2,7 +2,9 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button, RectangleSelector, TextBox, CheckButtons, SpanSelector
-from PyQt5.QtWidgets import QFileDialog
+import matplotlib as mpl
+import tkinter as tk
+from tkinter import filedialog
 import spe_loader
 
 
@@ -60,39 +62,35 @@ class LoaderUI(object):
     def _rect_select_callback(self, eclick, erelease):
         x1, y1 = eclick.xdata, eclick.ydata
         x2, y2 = erelease.xdata, erelease.ydata
-        print("(%3.2f, %3.2f) --> (%3.2f, %3.2f)" % (x1, y1, x2, y2))
 
     def _span_select_callback(self, ymin, ymax):
         ymin = int(np.floor(ymin))
         ymax = int(np.ceil(ymax))
-        print("(%3.2f) --> (%3.2f)" % (ymin, ymax))
         self.selected_data = self.full_sensor_data[ymin:ymax+1,:]
         self.ypix_min.set_val(str(ymin))
         self.ypix_max.set_val(str(ymax))
         self._image_selected_data(ymin, ymax)
 
     def _load_callback(self, event):
-        print('Load clicked')
         if self.spe_file is not None and self.selected_data is not None:
             self.pol_angle = float(self.txt_pol_angle.text)
             self.success = True
             plt.close()
+            mpl.rcParams.update(mpl.rcParamsDefault)
         else:
             print('Invalid loader state: must have loaded file and selected data')
 
     def _open_callback(self, event):
         # calls general observation load function
-        file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.AnyFile)
-        # file_dialog.setFilter("SPE files (*.spe)")
-        if file_dialog.exec_():
-            filenames = file_dialog.selectedFiles()
-            self.spe_file = spe_loader.load_from_files(filenames)
+        root = tk.Tk()
+        root.withdraw()
+        filename = filedialog.askopenfilename()
+        if filename is not '':
+            self.spe_file = spe_loader.load_from_files([filename])
             self.full_sensor_data = self.spe_file.data[0][0]
             self._image_full_sensor_data()
         else:
             return
-        print('Open clicked')
 
     def _full_lambda_callback(self, event):
         if self.selector is not None:
