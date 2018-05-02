@@ -2,9 +2,6 @@ import numpy as np
 from numba import jit, prange
 
 
-# B=sqrt(abs(1.5./uz3)./3).*(uz3./(ux.^2+uy.^2));
-# clear A;
-# BFP_Fields.ypol.EDx=bsxfun(@times,B,(bsxfun(@times,ux.*uy./n2,Tpxy)-bsxfun(@times,ux.*uy./uz2s,Tsz)));
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)
@@ -19,7 +16,6 @@ def _ypol_edx(ux, uy, uz2s, uz3, Tpxy, Tsz, n2o, n3):
     return edx
 
 
-# BFP_Fields.ypol.EDy=bsxfun(@times,B,(bsxfun(@times,uy.^2./n2,Tpxy)+bsxfun(@times,ux.^2./uz2s,Tsz)));
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)
@@ -34,7 +30,6 @@ def _ypol_edy(ux, uy, uz2s, uz3, Tpxy, Tsz, n2o, n3):
     return edy
 
 
-# BFP_Fields.ypol.EDz=bsxfun(@times,B.*(uy.*(ux.^2+uy.^2)./(n2.*uz2s)),Tpz);
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)
@@ -48,8 +43,7 @@ def _ypol_edz(ux, uy, uz2s, uz3, Tpz, n2o, n3):
                 edz[uxi,uyi,w] = Bz * Tpz[uxi, uyi, w]
     return edz
 
-# B=sqrt(abs(1.5./uz3)./3).*(uz3./(ux.^2+uy.^2));
-# BFP_Fields.ypol.MDx=-bsxfun(@times,B,(bsxfun(@times,uy.^2./uz2p,Tpz)+bsxfun(@times,ux.^2./n2,Tsxy)));
+
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)
@@ -64,7 +58,6 @@ def _ypol_mdx(ux, uy, uz2p, uz3, Tsxy, Tpz, n2o, n3):
     return mdx
 
 
-# BFP_Fields.ypol.MDy=-bsxfun(@times,B,(bsxfun(@times,ux.*uy./n2,Tsxy)-bsxfun(@times,ux.*uy./uz2p,Tpz)));
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)
@@ -79,7 +72,6 @@ def _ypol_mdy(ux, uy, uz2p, uz3, Tsxy, Tpz, n2o, n3):
     return mdy
 
 
-# BFP_Fields.ypol.MDz=-bsxfun(@times,B.*(ux.*(ux.^2+uy.^2)./(n2.*uz2s)),Tsz);
 @jit("complex128[:,:,:](complex128[:,:],complex128[:,:],complex128[:,:],complex128[:,:],"
      "complex128[:,:,:],float64,float64)",
      parallel=True, nopython=True)

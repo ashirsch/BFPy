@@ -113,12 +113,12 @@ class Field(object):
     def _calculate_transmission_coeffs(self):
         rs10 = frs.single_interface_reflection_s(self.u.z0, self.u.z1)
         rs21 = frs.single_interface_reflection_s(self.u.z1, self.u.z2s)
-        rs23 = frs.single_interface_reflection_s(self.u.z3, self.u.z2s)  # PAY ATTENTION TO ARGUMENT ORDER
+        rs23 = frs.single_interface_reflection_s(self.u.z3, self.u.z2s)
         ts23 = frs.single_interface_transmission_s(self.u.z2s, self.u.z3)
 
         rp10 = frs.single_interface_reflection_p(self.u.z0, self.u.z1, self.__bp.n0, self.__bp.n1)
         rp21 = frs.single_interface_reflection_p(self.u.z1, self.u.z2p, self.__bp.n1, self.__bp.n2o)
-        rp23 = frs.single_interface_reflection_p(self.u.z3, self.u.z2p, self.__bp.n3, self.__bp.n2o)  # PAY ATTENTION TO ARGUMENT ORDER
+        rp23 = frs.single_interface_reflection_p(self.u.z3, self.u.z2p, self.__bp.n3, self.__bp.n2o)
         tp23 = frs.single_interface_transmission_p(self.u.z2p, self.u.z3, self.__bp.n2o, self.__bp.n3)
 
         Rs   = frs.total_interface_reflection(rs21, rs10, self.u.z1, self.__bp.wavelength, self.__bp.l)

@@ -62,4 +62,3 @@ def total_interface_transmission_z(t23, r23, uz, wavelength, d, s, R):
                               (1 - r23[ux,uy] * R[ux,uy,w] * np.exp((2j*uz[ux,uy]/wavelength[w]*2*np.pi*(d+s))))) * \
                              (1 + R[ux,uy,w] * np.exp((2j*uz[ux,uy]/wavelength[w]*2*np.pi*s)))
     return T
-# Unrolling went from 19 seconds for Rs, Tsxy, Tsz to 9.8 seconds with guvec - NOW to 1.89 seconds with par. jit!
