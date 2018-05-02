@@ -14,11 +14,8 @@ a [pre-built wheel](https://www.lfd.uci.edu/~gohlke/pythonlibs/#ecos) before att
 ```
 git clone https://github.com/ashirsch/kemitter.git
 pip install numpy
-pip install pyqt5
 pip install -e .
 ```
-
-Note that the `PyQt5` dependency is slated to be removed in the next release.
 
 Finally, follow the instructions on the [MOSEK website](https://docs.mosek.com/8.1/install/installation.html) to 
 install the Python API and to obtain an academic license. Additional solver support will be available 
