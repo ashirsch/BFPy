@@ -2,6 +2,8 @@
 
 ### A Python environment for wide-angle energy-momentum spectroscopy
 
+[![DOI](https://zenodo.org/badge/122223369.svg)](https://zenodo.org/badge/latestdoi/122223369)
+
 Read the documentation at [here](https://ashirsch.github.io/kemitter/).
 
 ### Installation
